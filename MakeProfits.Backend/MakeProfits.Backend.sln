@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeProfits.Backend", "MakeProfits.Backend\MakeProfits.Backend.csproj", "{B5F56EFC-6B38-4F73-A1C1-E8A74A8027A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MakeProfits.Backend", "MakeProfits.Backend\MakeProfits.Backend.csproj", "{B5F56EFC-6B38-4F73-A1C1-E8A74A8027A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeProfits.BackendTests", "MakeProfits.BackendTests\MakeProfits.BackendTests.csproj", "{B182FB8B-D20E-47CA-A707-1AFDE79AFD30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B5F56EFC-6B38-4F73-A1C1-E8A74A8027A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5F56EFC-6B38-4F73-A1C1-E8A74A8027A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5F56EFC-6B38-4F73-A1C1-E8A74A8027A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B182FB8B-D20E-47CA-A707-1AFDE79AFD30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B182FB8B-D20E-47CA-A707-1AFDE79AFD30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B182FB8B-D20E-47CA-A707-1AFDE79AFD30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B182FB8B-D20E-47CA-A707-1AFDE79AFD30}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
