@@ -42,7 +42,7 @@ So, In-order to reflect the changes happened in the remote repository to the loc
 
         ``` git stash pop ```
     
-    - if there are no merge conflicts, you can build your solution proceed further 
+- if there are no merge conflicts, you can build your solution proceed further 
 
 
 - When the changes were tested and push them  to the central repository(GitHub)
