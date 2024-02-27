@@ -1,11 +1,23 @@
 
+using Serilog;
+
 namespace MakeProfits.Backend
 {
     public class Program
     {
         public static void Main(string[] args)
         {
+            //Logging at Program.cs
+            var Configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
+
             var builder = WebApplication.CreateBuilder(args);
+            builder.Host.UseSerilog();
 
             // Add services to the container.
 
@@ -22,6 +34,14 @@ namespace MakeProfits.Backend
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseSerilogRequestLogging();
+
+            //Middleware to log the requests
+            app.Use(async (context, next) =>
+            {
+                Log.Information("Received {RequestMethod} {RequestPath}",context.Request.Method,context.Request.Path);
+                await next(context);
+            });
 
             app.UseHttpsRedirection();
 
@@ -31,6 +51,7 @@ namespace MakeProfits.Backend
             app.MapControllers();
 
             app.Run();
+            Log.CloseAndFlush();
         }
     }
 }

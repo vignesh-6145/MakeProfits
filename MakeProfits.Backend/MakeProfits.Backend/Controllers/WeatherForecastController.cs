@@ -21,6 +21,14 @@ namespace MakeProfits.Backend.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            try
+            {
+                throw new Exception("Demo Exception");
+            }catch (Exception ex)
+            {
+                _logger.LogError(ex,"We caught a new Exception");
+            }
+            _logger.LogInformation("Just an Demo log");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
