@@ -1,5 +1,6 @@
 
 using Serilog;
+using MakeProfits.Repository;
 
 namespace MakeProfits.Backend
 {
@@ -22,6 +23,25 @@ namespace MakeProfits.Backend
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+
+            //Database connections
+
+            string? connectionString = builder.Configuration.GetConnectionString("DBConnection");
+            builder.Services.AddSingleton(new UserDataAccess(connectionString));
+
+            //Enabling Cors
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins", builder =>
+                {
+                    builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin();
+                });
+            });
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
