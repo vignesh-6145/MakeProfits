@@ -1,4 +1,5 @@
-﻿using MakeProfits.Models;
+﻿using MakeProfits.Backend.Models;
+using MakeProfits.Models;
 using MakeProfits.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +12,11 @@ namespace MakeProfits.Backend.Controllers
 
 
         private readonly UserDataAccess _userDataAccess;
-
-        public UserController(UserDataAccess userDataAccess)
+        private readonly ILogger<UserController> _logger;
+        public UserController(UserDataAccess userDataAccess, ILogger<UserController> logger)
         {
             _userDataAccess = userDataAccess;
+            _logger = logger;
         }
 
         //Working
@@ -31,9 +33,18 @@ namespace MakeProfits.Backend.Controllers
             return Ok(user);
         }
         [HttpPost("Login")]
-        public ActionResult<User> Login(string Username, string Password)
+        public ActionResult Login(string Username, string Password)
         {
-            return Ok(_userDataAccess.ValidateUser(Username, Password));
+            if(_userDataAccess.ValidateUser(Username, Password))
+            {
+                _logger.LogInformation("User authenticated successfully");
+                return Ok(_userDataAccess.getUserByUserName(Username));
+            }
+            else
+            {
+                _logger.LogInformation("Unable to Authenticate user {UserName}",Username);
+                return BadRequest("Wrong Credentials");
+            }
         }
 
 
