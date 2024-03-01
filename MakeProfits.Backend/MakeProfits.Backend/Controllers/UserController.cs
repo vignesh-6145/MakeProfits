@@ -1,4 +1,5 @@
 ﻿using MakeProfits.Backend.Models;
+using MakeProfits.Backend.Repository;
 using MakeProfits.Models;
 using MakeProfits.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,9 @@ namespace MakeProfits.Backend.Controllers
     {
 
 
-        private readonly UserDataAccess _userDataAccess;
+        private readonly IUserDataAccess _userDataAccess;
         private readonly ILogger<UserController> _logger;
-        public UserController(UserDataAccess userDataAccess, ILogger<UserController> logger)
+        public UserController(IUserDataAccess userDataAccess, ILogger<UserController> logger)
         {
             _userDataAccess = userDataAccess;
             _logger = logger;
