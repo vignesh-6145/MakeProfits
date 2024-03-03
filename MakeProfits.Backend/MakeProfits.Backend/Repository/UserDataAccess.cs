@@ -62,18 +62,18 @@ namespace MakeProfits.Repository
                         UserDTO user = new UserDTO();
                         if (reader.Read())
                         {
-                            user.UserName = reader.GetString(1);
                             user.FirstName = reader.GetString(0);
                             user.LastName = reader.GetString(1);
-                            user.PhoneNumber = reader.GetString(2);
-                            user.AddressLine = reader.GetString(3);
-                            user.City = reader.GetString(4);
-                            user.State = reader.GetString(5);
-                            user.EmailAddress = reader.GetString(6);
-                            user.AdvisorName = reader.GetString(7); 
-                            user.AgentName = reader.GetString(8);
-                            user.Company = reader.GetString(9);
-                            user.Role = reader.GetString(10);
+                            user.UserName = reader.GetString(2);
+                            user.PhoneNumber = reader.GetString(3);
+                            user.AddressLine = reader.GetString(4);
+                            user.City = reader.GetString(5);
+                            user.State = reader.GetString(6);
+                            user.EmailAddress = reader.GetString(7);
+                            user.AdvisorName = reader.GetString(8); 
+                            user.AgentName = reader.GetString(9);
+                            user.Company = reader.GetString(10);
+                            user.Role = reader.GetString(11);
 
                             return user;
                         }
