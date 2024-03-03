@@ -1,6 +1,7 @@
 
 using Serilog;
 using MakeProfits.Repository;
+using MakeProfits.Backend.Utillity;
 
 namespace MakeProfits.Backend
 {
@@ -23,6 +24,9 @@ namespace MakeProfits.Backend
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            //Adding API utilities
+            builder.Services.AddScoped<IInvestmentsUtility,InvestmentsUtility>();
 
 
             //Database connections
