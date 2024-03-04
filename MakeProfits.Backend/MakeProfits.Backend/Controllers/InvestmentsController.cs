@@ -17,11 +17,16 @@ namespace MakeProfits.Backend.Controllers
         }
         
         [HttpGet("getAllInvestments/{tickSymbol}")]
-        public async Task<AbstractInvestmentInfo> GetInvestmentBrief(string tickSymbol)
+        public async Task<ActionResult> GetInvestmentBrief(string tickSymbol)
         {
+            _logger.LogInformation("Initiating the process of retrieving data for {tickSymbol}", tickSymbol);
             var resp = await _APIUtility.GetInvestmentInfoAsync(tickSymbol);
-            return resp;
-           
+            if(resp is null)
+            {
+                return NotFound($"Unable to Retrieve Information for {tickSymbol}");
+            }
+            return Ok(resp);
+
         }
     }
 }

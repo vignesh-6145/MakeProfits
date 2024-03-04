@@ -1,5 +1,7 @@
 ﻿using MakeProfits.Backend.Models;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Newtonsoft.Json.Linq;
+using System.Collections;
 
 namespace MakeProfits.Backend.Utillity
 {
@@ -24,79 +26,167 @@ namespace MakeProfits.Backend.Utillity
             }catch (Exception ex)
             {
                 _logger.LogError(ex,"unable to make an API Call");
-
                 return "";
             }
 
         }
 
+        public void CaluclateTechnicalIndicators(AbstractInvestmentInfo info)
+        {
+            decimal Profitability, TechnicalEfficiency, FinancialStructure, ROE;
+            int Year;
+            foreach (KeyValuePair<int, IncomeStatementInfo> entry in info.IncomeStatements)
+            {
+                Year = entry.Key;
+                Profitability = CalculateProfitability(entry.Value.NetIncome,
+                    entry.Value.Revenue);
+
+                TechnicalEfficiency = CalculateTechnicalEfficiency(entry.Value.Revenue // This year Revenue
+                    , info.BalanceSheets[entry.Key].TotalAssets  //This year Total Assets
+                    , info.BalanceSheets[entry.Key - 1].TotalAssets); // Previous year Total Assets
+
+                FinancialStructure = CalculateFinancialStructure(info.BalanceSheets[entry.Key].TotalAssets
+                    , info.BalanceSheets[entry.Key - 1].TotalAssets
+                    , info.BalanceSheets[entry.Key].TotalStockholdersEquity
+                    , info.BalanceSheets[entry.Key - 1].TotalStockholdersEquity);
+
+                ROE = CalculateReturnOnEquity(Profitability, TechnicalEfficiency, FinancialStructure);
+
+                info.Profitability.Add(Year, Profitability);
+                info.TechnicalEfficiency.Add(Year, TechnicalEfficiency);
+                info.FinancialStructure.Add(Year, FinancialStructure);
+                info.ROE.Add(Year, ROE);
+            }
+        }
+        public async Task RetrieveIncomeStatements(AbstractInvestmentInfo info, string tickSymbol,string APIKey)
+        {
+
+            string IncomeStatement = "income-statement";
+            try
+            {
+                string msg = await MakeGet($"{IncomeStatement}/{tickSymbol}?apikey={APIKey}");
+
+                JArray IncomeStatementResponse = JArray.Parse(msg);
+                int year, i = 3;
+
+                _logger.LogInformation($"Retrieving Income-Statement information over years");
+                try
+                {
+                    foreach (var item in IncomeStatementResponse)
+                    {
+
+                        if (i == 0)
+                        {
+                            break;
+                        }
+
+                        IncomeStatementInfo incomeStatementInfo = new IncomeStatementInfo();
+                        incomeStatementInfo.NetIncome = Convert.ToDecimal(item["netIncome"]);
+                        incomeStatementInfo.Revenue = Convert.ToDecimal(item["revenue"]);
+                        year = Convert.ToInt32(item["calendarYear"]);
+                        info.IncomeStatements.Add(year, incomeStatementInfo);
+                        i--;
+                        _logger.LogInformation($"Income-Statement information retreieved for the {year} NetIncome : {incomeStatementInfo.NetIncome} Revenue : {incomeStatementInfo.Revenue}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to read income-statement response");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Something went wrong while retrieving data for Income statements");
+            }
+        }
+        public async Task RetrieveBalanceSheets(AbstractInvestmentInfo info, string tickSymbol,string APIKey)
+        {
+
+            string BalanceSheetAPI = "balance-sheet-statement";
+            _logger.LogInformation($"Retrieving Balancesheet information over years");
+            //TODO : limit the data for certain years can be done with limit query param, configure from appsettings
+            try
+            {
+                string msg = await MakeGet($"{BalanceSheetAPI}/{tickSymbol}?apikey={APIKey}");
+
+                JArray BalanceSheetResonse = JArray.Parse(msg);
+
+                info.TickerSymbol = Convert.ToString(BalanceSheetResonse[0]["symbol"]) ?? "";
+                info.CIK = Convert.ToString(BalanceSheetResonse[0]["cik"]) ?? "";
+
+                int i = 0;
+                int year;
+                BalanceSheetInfo balanceSheetInfo = new BalanceSheetInfo();
+                try
+                {
+                    foreach (var item in BalanceSheetResonse)
+                    {
+                        if (i == 4)
+                        {
+                            i--;
+                            break;
+                        }
+                        balanceSheetInfo.TotalAssets = Convert.ToDecimal(item["totalAssets"]);
+                        balanceSheetInfo.TotalStockholdersEquity = Convert.ToDecimal(item["totalStockholdersEquity"]);
+                        year = Convert.ToInt32(item["calendarYear"]);
+                        info.BalanceSheets.Add(year, balanceSheetInfo);
+                        i++;
+                        _logger.LogInformation($"Balance-sheet information retreieved for the {year} TotalAssets : {balanceSheetInfo.TotalAssets} TotalStockholdersEquity {balanceSheetInfo.TotalStockholdersEquity}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to read balance-sheet response");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Something went wrong while retrieving data for balance sheets");
+            }
+
+        }
+
+        public decimal CalculateTechnicalEfficiency(decimal CrrYearRevenue,decimal CrrYearTotalAssets, decimal PrevYearTotalAssets)
+        {
+            return CrrYearRevenue / ((CrrYearTotalAssets + PrevYearTotalAssets) / 2);
+        }
+
+        public decimal CalculateFinancialStructure(decimal CrrYearTotalAssets, decimal PrevYearTotalAssets, decimal CrrYearTotalStockholdersEquity, decimal PrevYearTotalStockholdersEquity)
+        {
+            return ((CrrYearTotalAssets + PrevYearTotalAssets) / 2) /
+                ((CrrYearTotalStockholdersEquity+PrevYearTotalStockholdersEquity)/2);
+        }
+        public decimal CalculateProfitability(decimal NetIncome, decimal Revenue)
+        {
+            return NetIncome / Revenue;
+        }
+        public decimal CalculateReturnOnEquity(decimal Profitability, decimal TechnicalEfficiency, decimal FinancialStructure)
+        {
+            return Profitability * TechnicalEfficiency * FinancialStructure;
+        }
         public async Task<AbstractInvestmentInfo> GetInvestmentInfoAsync(string tickSymbol)
         {
-            string BalanceSheetAPI = "balance-sheet-statement";
-            string IncomeStatement = "income-statement";
+
+            //TODO : Now the data was always been updated by continuoous API CALLs, need to persist the data and retrieve on demand
+
+            _logger.LogInformation("Retrieving Stock Information for {tickSymbol}",tickSymbol);
+            //TODO : retrieve data from appsettings3
             string APIKEY = "k7J5NXEx3Yac2p5UtmG5HkKJn9V92ktP";
             AbstractInvestmentInfo info = new AbstractInvestmentInfo();
 
-            string msg =await  MakeGet($"{BalanceSheetAPI}/{tickSymbol}?apikey={APIKEY}");
-            
-            JArray BalanceSheetResonse = JArray.Parse( msgStr );
+            await RetrieveBalanceSheets(info,tickSymbol,APIKEY);
 
-            info.TickerSymbol =Convert.ToString(BalanceSheetResonse[0]["symbol"]);
-            info.CIK = Convert.ToString(BalanceSheetResonse[0]["cik"]);
-
-            int i = 0;
-            int year;
-            BalanceSheetInfo balanceSheetInfo = new BalanceSheetInfo();
-            foreach(var item in BalanceSheetResonse)
-            {
-                if (i == 4)
-                {
-                    i--;
-                    break;
-                }
-                balanceSheetInfo.TotalAssets = Convert.ToDecimal(item["totalAssets"]);
-                balanceSheetInfo.TotalStockholdersEquity = Convert.ToDecimal(item["totalStockholdersEquity"]);
-                year = Convert.ToInt32(item["calendarYear"]);
-                info.BalanceSheets.Add(year,balanceSheetInfo);
-                i++;
-                
-            }
-
-            msg = await MakeGet($"{IncomeStatement}/{tickSymbol}?apikey={APIKEY}");
-
-            JArray IncomeStatementResponse = JArray.Parse( msgStr );
-            IncomeStatementInfo incomeStatementInfo = new IncomeStatementInfo();
-            foreach(var item in IncomeStatementResponse) {
-                if (i == 0)
-                {
-                    break;
-                }
-                incomeStatementInfo.NetIncome = Convert.ToDecimal(item["netIncome"]);
-                incomeStatementInfo.Revenue = Convert.ToDecimal(item["revenue"]);
-                year = Convert.ToInt32(item["calendarYear"]);
-                info.IncomeStatements.Add(year,incomeStatementInfo);
-                i--;
-            }
+            await RetrieveIncomeStatements(info,tickSymbol, APIKEY);
 
             //Caluclating technical indicators
-            decimal Profitability, TechnicalEfficiency, FinancialStructure, ROE;
-            foreach (KeyValuePair<int,IncomeStatementInfo> entry in info.IncomeStatements)
-            {
-                Profitability = entry.Value.NetIncome / entry.Value.Revenue;
-                TechnicalEfficiency = entry.Value.Revenue / ((info.BalanceSheets[entry.Key].TotalAssets + info.BalanceSheets[entry.Key - 1].TotalAssets) / 2);
-                FinancialStructure = ((info.BalanceSheets[entry.Key].TotalAssets + info.BalanceSheets[entry.Key - 1].TotalAssets) / 2)/
-                    ((info.BalanceSheets[entry.Key].TotalStockholdersEquity + info.BalanceSheets[entry.Key - 1].TotalStockholdersEquity) / 2);
-                ROE = Profitability * TechnicalEfficiency * FinancialStructure;
-                info.Profitability.Add(entry.Key,Profitability);
-                info.TechnicalEfficiency.Add(entry.Key, TechnicalEfficiency);
-                info.FinancialStructure.Add(entry.Key,FinancialStructure);
-                info.ROE.Add(entry.Key,ROE);
-            }
+
+            CaluclateTechnicalIndicators(info);
 
             return info;
 
 
-
         }
-    }
+            
+        }
 }
+
