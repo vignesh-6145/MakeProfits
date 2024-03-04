@@ -1,0 +1,30 @@
+.header{
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+     margin: 0;
+    height: 10vh;
+    align-items: center;
+    background-color: white;
+    color:black;
+    width: 100vw;
+}
+.logo{
+    display: flex;
+    align-items: center;
+}
+.logo>img{
+    height: 10vh;
+}
+ul{
+    display: flex;
+}
+.linklist{
+   
+    justify-content: space-evenly;
+    width: 30%;
+}
+
+li{
+    margin-right:10px ;
+}
