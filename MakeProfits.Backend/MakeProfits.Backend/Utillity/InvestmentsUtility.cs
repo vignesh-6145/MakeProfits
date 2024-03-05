@@ -1,4 +1,6 @@
 ﻿using MakeProfits.Backend.Models;
+using MakeProfits.Backend.Models.Securities;
+using MakeProfits.Backend.Repository;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Newtonsoft.Json.Linq;
 using System.Collections;
@@ -9,9 +11,11 @@ namespace MakeProfits.Backend.Utillity
     {
         string msgStr;
         private readonly ILogger<InvestmentsUtility> _logger;
+        private readonly IInvestmentDataAccess _dataAccess;
         // base uri : https://financialmodelingprep.com/api/v3/
-        public InvestmentsUtility(ILogger<InvestmentsUtility> logger):base() {
+        public InvestmentsUtility(ILogger<InvestmentsUtility> logger, IInvestmentDataAccess dataAccess):base() {
             this._logger = logger;
+            this._dataAccess = dataAccess;
         }
 
 
@@ -168,17 +172,46 @@ namespace MakeProfits.Backend.Utillity
         {
 
             //TODO : Now the data was always been updated by continuoous API CALLs, need to persist the data and retrieve on demand
+            // 1. Check if the particular stock informtion was present or not
+            Security security = new Security();
+            security.TickerSymbol = "AAPL";
+            security.OrganizationName = "Apple";
+            security.Cik = "123456789";
+            security.Price = 45;
+            _dataAccess.InsertSecurity(security);
+
+            SecurityBalanceSheet securityBalanceSheet = new SecurityBalanceSheet();
+            securityBalanceSheet.TickerSymbol = "AAPL";
+            securityBalanceSheet.TotalAssets = 123;
+            securityBalanceSheet.TotalStockholdersEquity = 456;
+            securityBalanceSheet.year = 2023;
+            _dataAccess.InsertSecurityBalanceSheetInfo(securityBalanceSheet);
+
+            SecurityIncomeStatement securityIncomeStatement = new SecurityIncomeStatement();
+            securityIncomeStatement.year = 2023;
+            securityIncomeStatement.TickerSymbol = "AAPL";
+            securityIncomeStatement.Revenue = 789;
+            securityIncomeStatement.NetIncome = 890;
+            _dataAccess.InsertSecurityIncomeStatementInfo(securityIncomeStatement);
+            if (_dataAccess.CheckSecurity("AAPL"))
+            {
+
+                _dataAccess.InsertSecurity(security);
+            }
+            // 2. If Present retreive the information
+            // 3. Else Make an API call for the Stock and store them into the DB
 
             _logger.LogInformation("Retrieving Stock Information for {tickSymbol}",tickSymbol);
             //TODO : retrieve data from appsettings3
             string APIKEY = "k7J5NXEx3Yac2p5UtmG5HkKJn9V92ktP";
             AbstractInvestmentInfo info = new AbstractInvestmentInfo();
+            
+            _dataAccess.CheckSecurityBalanceSheetInfo(tickSymbol,2023);
 
             await RetrieveBalanceSheets(info,tickSymbol,APIKEY);
 
             await RetrieveIncomeStatements(info,tickSymbol, APIKEY);
 
-            //Caluclating technical indicators
 
             CaluclateTechnicalIndicators(info);
 
