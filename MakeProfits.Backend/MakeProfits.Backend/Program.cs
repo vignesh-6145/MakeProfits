@@ -1,6 +1,8 @@
 
 using Serilog;
 using MakeProfits.Repository;
+using MakeProfits.Backend.Utillity;
+using MakeProfits.Backend.Repository;
 
 namespace MakeProfits.Backend
 {
@@ -24,11 +26,15 @@ namespace MakeProfits.Backend
 
             builder.Services.AddControllers();
 
+            //Adding API utilities
+            builder.Services.AddScoped<IInvestmentsUtility,InvestmentsUtility>();
+
 
             //Database connections
 
             string? connectionString = builder.Configuration.GetConnectionString("DBConnection");
             builder.Services.AddSingleton(new UserDataAccess(connectionString));
+            builder.Services.AddSingleton<IInvestmentDataAccess,InvestmentDataAccess>();
 
             //Enabling Cors
             builder.Services.AddCors(options =>
