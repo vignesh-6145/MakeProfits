@@ -4,6 +4,7 @@ using MakeProfits.Backend.Repository;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Newtonsoft.Json.Linq;
 using System.Collections;
+using System.Data.SqlClient;
 
 namespace MakeProfits.Backend.Utillity
 {
@@ -62,6 +63,117 @@ namespace MakeProfits.Backend.Utillity
                 info.ROE.Add(Year, ROE);
             }
         }
+
+        
+        public async Task PersistCompanyProfile(string tickSymbol, string APIKey)
+        {
+            string CompanyProfile = "profile";
+            try
+            {
+                string msg =await MakeGet($"{CompanyProfile}/{tickSymbol}?apikey={APIKey}");
+                JToken CompanyProfileResponse = JArray.Parse(msg)[0];
+
+                Security security = new Security();
+                security.TickerSymbol = Convert.ToString(CompanyProfileResponse["symbol"]);
+                security.Cik = Convert.ToString(CompanyProfileResponse["cik"]);
+                security.OrganizationName = Convert.ToString(CompanyProfileResponse["companyName"]);
+                security.Price = Convert.ToDecimal(CompanyProfileResponse["price"]);
+
+                _logger.LogInformation("Information of {TickSymbol} was retrieved from API",tickSymbol);
+
+                _dataAccess.InsertSecurity(security);
+                _logger.LogInformation("Data was stored into DB");
+
+            }catch (Exception ex)
+            {
+                _logger.LogError(ex, "Something went wrong while retrieving data for Income statements");
+            }
+        }
+        public async Task PersistIncomeStatements(string tickSymbol, string APIKey){
+            string IncomeStatement = "income-statement";
+            try
+            {
+                string msg = await MakeGet($"{IncomeStatement}/{tickSymbol}?apikey={APIKey}");
+
+                JArray IncomeStatementResponse = JArray.Parse(msg);
+                int year;
+                try
+                {
+
+                    SecurityIncomeStatement incomeStatementInfo = new SecurityIncomeStatement();
+                    foreach (var item in IncomeStatementResponse)
+                    {
+
+                        incomeStatementInfo.NetIncome = Convert.ToDecimal(item["netIncome"]);
+                        incomeStatementInfo.Revenue = Convert.ToDecimal(item["revenue"]);
+                        incomeStatementInfo.year = Convert.ToInt32(item["calendarYear"]);
+                        incomeStatementInfo.TickerSymbol = tickSymbol;
+
+                        _logger.LogInformation($"Income-Statement information retreieved for the {incomeStatementInfo.year} NetIncome : {incomeStatementInfo.NetIncome} Revenue : {incomeStatementInfo.Revenue}");
+
+                        if (!_dataAccess.CheckSecurityInvestmentStatementtInfo(tickSymbol, incomeStatementInfo.year))
+                        {
+                            _dataAccess.InsertSecurityIncomeStatementInfo(incomeStatementInfo);
+                            _logger.LogInformation("Data persisted");
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Information already exists");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to read income-statement response");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Something went wrong while retrieving data for Income statements");
+            }
+        }
+        public async Task PersistBalanceSheets(string tickSymbol, string APIKey)
+        {
+            string BalanceSheetAPI = "balance-sheet-statement";
+            _logger.LogInformation($"Retrieving Balancesheet information over years");
+            //TODO : limit the data for certain years can be done with limit query param, configure from appsettings
+            try
+            {
+                string msg = await MakeGet($"{BalanceSheetAPI}/{tickSymbol}?apikey={APIKey}");
+
+                JArray BalanceSheetResonse = JArray.Parse(msg);
+                SecurityBalanceSheet balanceSheetInfo = new SecurityBalanceSheet();
+                try
+                {
+                    foreach (var item in BalanceSheetResonse)
+                    { 
+                        balanceSheetInfo.TotalAssets = Convert.ToDecimal(item["totalAssets"]);
+                        balanceSheetInfo.TotalStockholdersEquity = Convert.ToDecimal(item["totalStockholdersEquity"]);
+                        balanceSheetInfo.year= Convert.ToInt32(item["calendarYear"]);
+                        balanceSheetInfo.TickerSymbol = tickSymbol;
+                        _logger.LogInformation($"Balance-sheet information retreieved for the {balanceSheetInfo.year} TotalAssets : {balanceSheetInfo.TotalAssets} TotalStockholdersEquity {balanceSheetInfo.TotalStockholdersEquity}");
+
+                        if (!_dataAccess.CheckSecurityInvestmentStatementtInfo(tickSymbol, balanceSheetInfo.year))
+                        {
+                            _dataAccess.InsertSecurityBalanceSheetInfo(balanceSheetInfo);
+                            _logger.LogInformation("Data persisted");
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Information already exists");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to read balance-sheet response");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Something went wrong while retrieving data for balance sheets");
+            }
+        }
         public async Task RetrieveIncomeStatements(AbstractInvestmentInfo info, string tickSymbol,string APIKey)
         {
 
@@ -115,9 +227,7 @@ namespace MakeProfits.Backend.Utillity
 
                 JArray BalanceSheetResonse = JArray.Parse(msg);
 
-                info.TickerSymbol = Convert.ToString(BalanceSheetResonse[0]["symbol"]) ?? "";
-                info.CIK = Convert.ToString(BalanceSheetResonse[0]["cik"]) ?? "";
-
+             
                 int i = 0;
                 int year;
                 BalanceSheetInfo balanceSheetInfo = new BalanceSheetInfo();
@@ -171,46 +281,61 @@ namespace MakeProfits.Backend.Utillity
         public async Task<AbstractInvestmentInfo> GetInvestmentInfoAsync(string tickSymbol)
         {
 
-            //TODO : Now the data was always been updated by continuoous API CALLs, need to persist the data and retrieve on demand
-            // 1. Check if the particular stock informtion was present or not
-            Security security = new Security();
-            security.TickerSymbol = "AAPL";
-            security.OrganizationName = "Apple";
-            security.Cik = "123456789";
-            security.Price = 45;
-            _dataAccess.InsertSecurity(security);
-
-            SecurityBalanceSheet securityBalanceSheet = new SecurityBalanceSheet();
-            securityBalanceSheet.TickerSymbol = "AAPL";
-            securityBalanceSheet.TotalAssets = 123;
-            securityBalanceSheet.TotalStockholdersEquity = 456;
-            securityBalanceSheet.year = 2023;
-            _dataAccess.InsertSecurityBalanceSheetInfo(securityBalanceSheet);
-
-            SecurityIncomeStatement securityIncomeStatement = new SecurityIncomeStatement();
-            securityIncomeStatement.year = 2023;
-            securityIncomeStatement.TickerSymbol = "AAPL";
-            securityIncomeStatement.Revenue = 789;
-            securityIncomeStatement.NetIncome = 890;
-            _dataAccess.InsertSecurityIncomeStatementInfo(securityIncomeStatement);
-            if (_dataAccess.CheckSecurity("AAPL"))
-            {
-
-                _dataAccess.InsertSecurity(security);
-            }
-            // 2. If Present retreive the information
-            // 3. Else Make an API call for the Stock and store them into the DB
-
-            _logger.LogInformation("Retrieving Stock Information for {tickSymbol}",tickSymbol);
-            //TODO : retrieve data from appsettings3
             string APIKEY = "k7J5NXEx3Yac2p5UtmG5HkKJn9V92ktP";
             AbstractInvestmentInfo info = new AbstractInvestmentInfo();
+
+            //TODO : Now the data was always been updated by continuoous API CALLs, need to persist the data and retrieve on demand
+            // 1. Check if the particular stock informtion was present or not
+            if (!_dataAccess.CheckSecurity(tickSymbol))
+            {
+                //if there was no previous stock presence
+                _logger.LogInformation("This stock has no presence, Retrieving Stock Information for {tickSymbol}", tickSymbol);
+                await PersistCompanyProfile( tickSymbol, APIKEY);
+                await PersistBalanceSheets(tickSymbol, APIKEY);
+                await PersistIncomeStatements(tickSymbol, APIKEY);
+            }
             
-            _dataAccess.CheckSecurityBalanceSheetInfo(tickSymbol,2023);
+                SecurityDTO security = _dataAccess.RetrieveSecurityProfile(tickSymbol);
+                if(security != null)
+                {
+                    info.security = security;
+                }
+                else
+                {
+                    _logger.LogInformation("No Record Found");
+                }
+                int years = 3;
+                SecurityIncomeStatement incomeStatement;
+                SecurityBalanceSheet balanceSheet;
+                for (int i = 1; i <= years; i++)
+                {
+                    int crrYear = DateTime.UtcNow.Year - i;
+                    if (i == 1)
+                    {
+                        balanceSheet = _dataAccess.RetrieveSecurityBalanceSheet(tickSymbol, DateTime.UtcNow.Year - years - 1);
+                        info.BalanceSheets.Add(DateTime.UtcNow.Year - years - 1, new BalanceSheetInfo() { TotalAssets = balanceSheet.TotalAssets, TotalStockholdersEquity = balanceSheet.TotalStockholdersEquity });
+                    }
+                    incomeStatement = _dataAccess.RetieveSecurityIncomeStatement(tickSymbol,crrYear);
+                    balanceSheet = _dataAccess.RetrieveSecurityBalanceSheet(tickSymbol, crrYear);
+                    info.IncomeStatements.Add(crrYear,new IncomeStatementInfo() { NetIncome = incomeStatement.NetIncome,Revenue = incomeStatement.Revenue});
+                    info.BalanceSheets.Add(crrYear, new BalanceSheetInfo() { TotalAssets = balanceSheet.TotalAssets, TotalStockholdersEquity = balanceSheet.TotalStockholdersEquity });
+                    
+                    //info.Profitability.Add(crrYear, CalculateProfitability(incomeStatement.NetIncome, incomeStatement.Revenue));
+                    //info.TechnicalEfficiency.Add(crrYear, CalculateTechnicalEfficiency(incomeStatement.Revenue, balanceSheet.TotalAssets, info.BalanceSheets[crrYear - 1].TotalAssets));
+                    //info.FinancialStructure.Add(crrYear, CalculateFinancialStructure(balanceSheet.TotalAssets, info.BalanceSheets[crrYear - 1].TotalAssets,balanceSheet.TotalStockholdersEquity, info.BalanceSheets[crrYear - 1].TotalStockholdersEquity));
+                    //info.ROE.Add(crrYear,CalculateReturnOnEquity(info.Profitability[crrYear], info.TechnicalEfficiency[crrYear], info.TechnicalEfficiency[crrYear]));
 
-            await RetrieveBalanceSheets(info,tickSymbol,APIKEY);
+                }
+            
+            // 2. If Present retreive the information
+            // 3. Else Make an API call for the Stock and store them into the DB
+            _logger.LogInformation("Retrieving Stock Information for {tickSymbol}", tickSymbol);
 
-            await RetrieveIncomeStatements(info,tickSymbol, APIKEY);
+            //TODO : retrieve data from appsettings3
+
+            //await RetrieveBalanceSheets(info,tickSymbol,APIKEY);
+
+            //await RetrieveIncomeStatements(info,tickSymbol, APIKEY);
 
 
             CaluclateTechnicalIndicators(info);

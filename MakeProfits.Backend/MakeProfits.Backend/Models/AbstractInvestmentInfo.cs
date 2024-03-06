@@ -1,11 +1,12 @@
-﻿namespace MakeProfits.Backend.Models
+﻿using MakeProfits.Backend.Models.Securities;
+
+namespace MakeProfits.Backend.Models
 {
     public class AbstractInvestmentInfo
     {
-        public string OrganizationName { get; set; }
-        public string TickerSymbol { get; set; }
-        public string CIK {  get; set; }
+        public SecurityDTO security { get; set; }
         public Dictionary<int,IncomeStatementInfo> IncomeStatements { get; set; } = new Dictionary<int, IncomeStatementInfo>();
+
         public Dictionary<int, BalanceSheetInfo> BalanceSheets { get; set; } = new Dictionary<int, BalanceSheetInfo>();
 
         // profitability[i] = IncomeStatements[i].NetIncome/IncomeStatements[i].Revenue

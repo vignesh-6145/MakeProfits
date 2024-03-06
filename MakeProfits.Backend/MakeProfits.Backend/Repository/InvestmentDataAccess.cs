@@ -170,7 +170,7 @@ namespace MakeProfits.Backend.Repository
                     try
                     {
                         SqlDataReader reader = command.ExecuteReader();
-                        if (reader.Read())
+                        if (reader.Read() && reader.HasRows)
                         {
                             if (reader.GetInt32(0) == 1)
                             {
@@ -213,7 +213,76 @@ namespace MakeProfits.Backend.Repository
                 return false;
             }
         }
+        public SecurityDTO RetrieveSecurityProfile(string tickSymbol)
+        {
+            _logger.LogInformation("Request to retieve {tickSymbol} Profile",tickSymbol);
+            try
+            {
+                string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(conn);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("RetrieveSecurities",connection);
+                    command.CommandType = CommandType.StoredProcedure;
 
+                    _logger.LogInformation("Created and Parametrized the Comamnd");
+                    command.Parameters.AddWithValue("@TickerSymbol",tickSymbol);
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        _logger.LogInformation("Command Executing retrieving results");
+                        if(reader.Read() && reader.HasRows) {
+                            SecurityDTO security = new SecurityDTO();
+                            security.TickerSymbol = reader.GetString(0);
+                            security.Cik = reader.GetString(1);
+                            security.OrganizationName = reader.GetString(2);
+                            security.Price = reader.GetDecimal(3);
+                            //security.UpdatedOn = reader.GetDateTime(4);
+                            _logger.LogInformation("Results Retrieved");
+                            return security;
+                        }
+                        else
+                        {
+                            _logger.LogInformation("No SecurityProdile Record found");
+                            return null;
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "RetrieveSecurities");
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "RetrieveSecurities");
+                        return null;
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    return null;
+                }
+                return null;
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
+                return null;
+            }
+        }
         public bool InsertSecurity(Security security)
         {
             _logger.LogInformation("Inserting the security of {TickSymbol}",security.TickerSymbol);
@@ -232,6 +301,7 @@ namespace MakeProfits.Backend.Repository
                     command.Parameters.AddWithValue("@cik", security.Cik);
                     command.Parameters.AddWithValue("@OrganizarionName", security.OrganizationName);
                     command.Parameters.AddWithValue("@UpdatedOn",security.UpdatedOn);
+                    command.Parameters.AddWithValue("@price", security.Price);
                     _logger.LogInformation("Created Command and parametrized Command");
                     
                     command.ExecuteNonQuery();
@@ -337,6 +407,151 @@ namespace MakeProfits.Backend.Repository
                 return false;
             }
             return false;
+        }
+
+        public SecurityIncomeStatement RetieveSecurityIncomeStatement(string tickSymbol, int year)
+        {
+            _logger.LogInformation("Request to retieve {tickSymbol} Income-Statement for the {year}",tickSymbol,year);
+            try
+            {
+                string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(conn);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("RetrieveSecurityIncome", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    _logger.LogInformation("Created and Parametrized the Comamnd");
+                    command.Parameters.AddWithValue("@TickerSymbol", tickSymbol);
+                    command.Parameters.AddWithValue("@year", year);
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        _logger.LogInformation("Command Executing retrieving results");
+                        if (reader.Read() && reader.HasRows)
+                        {
+                            SecurityIncomeStatement incomeStatement = new SecurityIncomeStatement();
+                            incomeStatement.TickerSymbol = reader.GetString(0);
+                            incomeStatement.year = reader.GetInt32(1);
+                            incomeStatement.NetIncome = reader.GetDecimal(2);
+                            incomeStatement.Revenue = reader.GetDecimal(3);
+                            //security.UpdatedOn = reader.GetDateTime(4);
+                            _logger.LogInformation("Retrieved Income-Statement");
+                            return incomeStatement;
+                        }
+                        else
+                        {
+                            _logger.LogInformation("No income-statement Record found");
+                            return null;
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "RetrieveSecurityIncome");
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "RetrieveSecurityIncome");
+                        return null;
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    return null;
+                }
+                return null;
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
+                return null;
+            }
+        }
+        public SecurityBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year)
+        {
+            _logger.LogInformation("Request to retieve {tickSymbol} Balance-Sheet for the {year}", tickSymbol, year);
+            try
+            {
+                string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(conn);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("RetrieveSecurityBalance", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    _logger.LogInformation("Created and Parametrized the Comamnd");
+                    command.Parameters.AddWithValue("@TickerSymbol", tickSymbol);
+                    command.Parameters.AddWithValue("@year", year);
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        _logger.LogInformation("Command Executing retrieving results");
+                        if (reader.Read() && reader.HasRows)
+                        {
+                            SecurityBalanceSheet balanceSheet = new SecurityBalanceSheet();
+                            balanceSheet.TickerSymbol = reader.GetString(0);
+                            balanceSheet.year = reader.GetInt32(1);
+                            balanceSheet.TotalAssets = reader.GetDecimal(2);
+                            balanceSheet.TotalStockholdersEquity = reader.GetDecimal(3);
+                            //security.UpdatedOn = reader.GetDateTime(4);
+                            _logger.LogInformation("Retrieved Balance-Sheet");
+                            return balanceSheet;
+                        }
+                        else
+                        {
+                            _logger.LogInformation("No income-statement Record found");
+                            return null;
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "RetrieveSecurityBalance");
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "RetrieveSecurityBalance");
+                        return null;
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    return null;
+                }
+                return null;
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
+                return null;
+            }
         }
     }
 }

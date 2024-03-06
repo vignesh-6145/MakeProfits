@@ -10,6 +10,9 @@ namespace MakeProfits.Backend.Repository
         bool InsertSecurity(Security security);
         bool InsertSecurityBalanceSheetInfo(SecurityBalanceSheet securityBalanceSheet);
         bool InsertSecurityIncomeStatementInfo(SecurityIncomeStatement securityIncomeStatement);
+        SecurityDTO RetrieveSecurityProfile(string _);
+        SecurityIncomeStatement RetieveSecurityIncomeStatement(string tickSymbol, int year);
+        SecurityBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year);    
 
     }
 }
