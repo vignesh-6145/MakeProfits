@@ -1,6 +1,6 @@
-﻿namespace MakeProfits.Backend.Models.Securities
+﻿namespace MakeProfits.Backend.Models.Stock
 {
-    public class Security : AbstractSecurity
+    public class Stock : AbstractStock
     {
         public int SecurityID { get; set; }
         public DateTime UpdatedOn { get; set; } = DateTime.Now;

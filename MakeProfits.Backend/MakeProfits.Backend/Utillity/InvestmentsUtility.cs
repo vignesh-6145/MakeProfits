@@ -1,5 +1,5 @@
 ﻿using MakeProfits.Backend.Models;
-using MakeProfits.Backend.Models.Securities;
+using MakeProfits.Backend.Models.Stock;
 using MakeProfits.Backend.Repository;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Newtonsoft.Json.Linq;
@@ -73,7 +73,7 @@ namespace MakeProfits.Backend.Utillity
                 string msg =await MakeGet($"{CompanyProfile}/{tickSymbol}?apikey={APIKey}");
                 JToken CompanyProfileResponse = JArray.Parse(msg)[0];
 
-                Security security = new Security();
+                Stock security = new Stock();
                 security.TickerSymbol = Convert.ToString(CompanyProfileResponse["symbol"]);
                 security.Cik = Convert.ToString(CompanyProfileResponse["cik"]);
                 security.OrganizationName = Convert.ToString(CompanyProfileResponse["companyName"]);
@@ -100,7 +100,7 @@ namespace MakeProfits.Backend.Utillity
                 try
                 {
 
-                    SecurityIncomeStatement incomeStatementInfo = new SecurityIncomeStatement();
+                    StockIncomeStatement incomeStatementInfo = new StockIncomeStatement();
                     foreach (var item in IncomeStatementResponse)
                     {
 
@@ -142,7 +142,7 @@ namespace MakeProfits.Backend.Utillity
                 string msg = await MakeGet($"{BalanceSheetAPI}/{tickSymbol}?apikey={APIKey}");
 
                 JArray BalanceSheetResonse = JArray.Parse(msg);
-                SecurityBalanceSheet balanceSheetInfo = new SecurityBalanceSheet();
+                StockBalanceSheet balanceSheetInfo = new StockBalanceSheet();
                 try
                 {
                     foreach (var item in BalanceSheetResonse)
@@ -295,7 +295,7 @@ namespace MakeProfits.Backend.Utillity
                 await PersistIncomeStatements(tickSymbol, APIKEY);
             }
             
-                SecurityDTO security = _dataAccess.RetrieveSecurityProfile(tickSymbol);
+                StockDTO security = _dataAccess.RetrieveSecurityProfile(tickSymbol);
                 if(security != null)
                 {
                     info.security = security;
@@ -305,8 +305,8 @@ namespace MakeProfits.Backend.Utillity
                     _logger.LogInformation("No Record Found");
                 }
                 int years = 3;
-                SecurityIncomeStatement incomeStatement;
-                SecurityBalanceSheet balanceSheet;
+                StockIncomeStatement incomeStatement;
+                StockBalanceSheet balanceSheet;
                 for (int i = 1; i <= years; i++)
                 {
                     int crrYear = DateTime.UtcNow.Year - i;

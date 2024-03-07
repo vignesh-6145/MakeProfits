@@ -1,4 +1,5 @@
-﻿using MakeProfits.Backend.Models.Securities;
+﻿
+using MakeProfits.Backend.Models.Stock;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -23,10 +24,10 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogInformation("Connection Established");
                 try
                 {
-                    SqlCommand command = new SqlCommand("CheckForSecurity",connection);
+                    SqlCommand command = new SqlCommand("check_for_stock",connection);
                     command.CommandType = CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("@TickerSymbol",TickSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol",TickSymbol);
                     _logger.LogInformation("Created Command and parametrized Command");
 
                     try
@@ -38,25 +39,25 @@ namespace MakeProfits.Backend.Repository
                             DateTime lastUpdatedOn =  reader.GetDateTime(1);
                             if ( status == 1 )
                             {
-                                _logger.LogInformation("{TickSymbol} was already stored in DB",TickSymbol);
+                                _logger.LogInformation("{ticker_symbol} was already stored in DB", TickSymbol);
 
                                 TimeSpan updateDiff = DateTime.UtcNow.Subtract(lastUpdatedOn);
                                 if(updateDiff.Days > 1)
                                 {
-                                    _logger.LogInformation("The price of  {TickSymbol} haven't updated, have to make a API Call", TickSymbol);
+                                    _logger.LogInformation("The price of  {ticker_symbol} haven't updated, have to make a API Call", TickSymbol);
                                     return false;
                                 }
                                 return true;
                             }
                             else
                             {
-                                _logger.LogInformation("{TickSymbol} was not stored in DB", TickSymbol);
+                                _logger.LogInformation("{ticker_symbol} was not stored in DB", TickSymbol);
                                 return false;
                             }
                         }
                         else
                         {
-                            _logger.LogInformation("{TickSymbol} was not stored in DB", TickSymbol);
+                            _logger.LogInformation("{ticker_symbol} was not stored in DB", TickSymbol);
                             return false;
                         }
 
@@ -86,7 +87,7 @@ namespace MakeProfits.Backend.Repository
 
         public bool CheckSecurityBalanceSheetInfo(string TickSymbol, int year)
         {
-            _logger.LogInformation("Checking if the Balance sheet of {TickSymbol} is available for the {year}",TickSymbol,year);
+            _logger.LogInformation("Checking if the Balance sheet of {ticker_symbol} is available for the {year}",TickSymbol,year);
             try
             {
                 string connectionString = Convert.ToString(_configuration.GetConnectionString("DBConnection"));
@@ -95,10 +96,10 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogInformation("Connection Established");
                 try
                 {
-                    SqlCommand command = new SqlCommand("CheckForSecurityBalance", connection);
+                    SqlCommand command = new SqlCommand("check_for_stock_balance_sheet", connection);
                     command.CommandType = CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("@TickerSymbol", TickSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol", TickSymbol);
                     command.Parameters.AddWithValue("@year",year);
                     _logger.LogInformation("Created Command and parametrized Command");
 
@@ -109,18 +110,18 @@ namespace MakeProfits.Backend.Repository
                         {
                             if (reader.GetInt32(0) == 1)
                             {
-                                _logger.LogInformation("{TickSymbol} was already stored in DB", TickSymbol);
+                                _logger.LogInformation("{ticker_symbol} was already stored in DB", TickSymbol);
                                 return true;
                             }
                             else
                             {
-                                _logger.LogInformation("{TickSymbol} was not stored in DB", TickSymbol);
+                                _logger.LogInformation("{ticker_symbol} was not stored in DB", TickSymbol);
                                 return false;
                             }
                         }
                         else
                         {
-                            _logger.LogInformation("{TickSymbol} was not stored in DB", TickSymbol);
+                            _logger.LogInformation("{ticker_symbol} was not stored in DB", TickSymbol);
                             return false;
                         }
 
@@ -151,7 +152,7 @@ namespace MakeProfits.Backend.Repository
 
         public bool CheckSecurityInvestmentStatementtInfo(string TickSymbol, int year)
         {
-            _logger.LogInformation("Checking if the Income sheet of {TickSymbol} is available for the {year}", TickSymbol, year);
+            _logger.LogInformation("Checking if the Income sheet of {ticker_symbol} is available for the {year}", TickSymbol, year);
             try
             {
                 string connectionString = Convert.ToString(_configuration.GetConnectionString("DBConnection"));
@@ -160,10 +161,10 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogInformation("Connection Established");
                 try
                 {
-                    SqlCommand command = new SqlCommand("CheckForSecurityIncome", connection);
+                    SqlCommand command = new SqlCommand("check_for_income_statement", connection);
                     command.CommandType = CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("@TickerSymbol", TickSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol", TickSymbol);
                     command.Parameters.AddWithValue("@year", year);
                     _logger.LogInformation("Created Command and parametrized Command");
 
@@ -174,18 +175,18 @@ namespace MakeProfits.Backend.Repository
                         {
                             if (reader.GetInt32(0) == 1)
                             {
-                                _logger.LogInformation("{TickSymbol} was already stored in DB", TickSymbol);
+                                _logger.LogInformation("{ticker_symbol} was already stored in DB", TickSymbol);
                                 return true;
                             }
                             else
                             {
-                                _logger.LogInformation("{TickSymbol} was not stored in DB", TickSymbol);
+                                _logger.LogInformation("{ticker_symbol} was not stored in DB", TickSymbol);
                                 return false;
                             }
                         }
                         else
                         {
-                            _logger.LogInformation("{TickSymbol} was not stored in DB", TickSymbol);
+                            _logger.LogInformation("{ticker_symbol} was not stored in DB", TickSymbol);
                             return false;
                         }
 
@@ -213,9 +214,9 @@ namespace MakeProfits.Backend.Repository
                 return false;
             }
         }
-        public SecurityDTO RetrieveSecurityProfile(string tickSymbol)
+        public StockDTO RetrieveSecurityProfile(string tickSymbol)
         {
-            _logger.LogInformation("Request to retieve {tickSymbol} Profile",tickSymbol);
+            _logger.LogInformation("Request to retieve {ticker_symbol} Profile", tickSymbol);
             try
             {
                 string conn = _configuration.GetConnectionString("DBConnection");
@@ -223,17 +224,17 @@ namespace MakeProfits.Backend.Repository
                 connection.Open();
                 try
                 {
-                    SqlCommand command = new SqlCommand("RetrieveSecurities",connection);
+                    SqlCommand command = new SqlCommand("retrieve_stock_info",connection);
                     command.CommandType = CommandType.StoredProcedure;
 
                     _logger.LogInformation("Created and Parametrized the Comamnd");
-                    command.Parameters.AddWithValue("@TickerSymbol",tickSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol",tickSymbol);
                     try
                     {
                         SqlDataReader reader = command.ExecuteReader();
                         _logger.LogInformation("Command Executing retrieving results");
                         if(reader.Read() && reader.HasRows) {
-                            SecurityDTO security = new SecurityDTO();
+                            StockDTO security = new StockDTO();
                             security.TickerSymbol = reader.GetString(0);
                             security.Cik = reader.GetString(1);
                             security.OrganizationName = reader.GetString(2);
@@ -250,12 +251,12 @@ namespace MakeProfits.Backend.Repository
                     }
                     catch (SqlException ex)
                     {
-                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "RetrieveSecurities");
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "retrieve_stock_info");
                         return null;
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "RetrieveSecurities");
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "retrieve_stock_info");
                         return null;
                     }
 
@@ -283,9 +284,9 @@ namespace MakeProfits.Backend.Repository
                 return null;
             }
         }
-        public bool InsertSecurity(Security security)
+        public bool InsertSecurity(Stock security)
         {
-            _logger.LogInformation("Inserting the security of {TickSymbol}",security.TickerSymbol);
+            _logger.LogInformation("Inserting the security of {ticker_symbol}",security.TickerSymbol);
             try
             {
                 string connectionString = Convert.ToString(_configuration.GetConnectionString("DBConnection"));
@@ -294,13 +295,13 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogInformation("Connection Established");
                 try
                 {
-                    SqlCommand command = new SqlCommand("InsertSecurity", connection);
+                    SqlCommand command = new SqlCommand("insert_stock", connection);
                     command.CommandType = CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("@TickerSymbol", security.TickerSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol", security.TickerSymbol);
                     command.Parameters.AddWithValue("@cik", security.Cik);
-                    command.Parameters.AddWithValue("@OrganizarionName", security.OrganizationName);
-                    command.Parameters.AddWithValue("@UpdatedOn",security.UpdatedOn);
+                    command.Parameters.AddWithValue("@stock_name", security.OrganizationName);
+                    command.Parameters.AddWithValue("@updated_ob",security.UpdatedOn);
                     command.Parameters.AddWithValue("@price", security.Price);
                     _logger.LogInformation("Created Command and parametrized Command");
                     
@@ -309,7 +310,7 @@ namespace MakeProfits.Backend.Repository
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to Create & Execute Command : {SP_procedureName}", "InsertSecurity");
+                    _logger.LogError(ex, "Failed to Create & Execute Command : {SP_procedureName}", "insert_stock");
                     return false;
                 }
             }
@@ -326,9 +327,9 @@ namespace MakeProfits.Backend.Repository
             return false;
         }
 
-        public bool InsertSecurityBalanceSheetInfo(SecurityBalanceSheet securityBalanceSheet)
+        public bool InsertSecurityBalanceSheetInfo(StockBalanceSheet securityBalanceSheet)
         {
-            _logger.LogInformation("Inserting the security-balance-sheet info of {TickSymbol}", securityBalanceSheet.TickerSymbol);
+            _logger.LogInformation("Inserting the security-balance-sheet info of {ticker_symbol}", securityBalanceSheet.TickerSymbol);
             try
             {
                 string connectionString = Convert.ToString(_configuration.GetConnectionString("DBConnection"));
@@ -337,13 +338,13 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogInformation("Connection Established");
                 try
                 {
-                    SqlCommand command = new SqlCommand("InsertSecurityBalanceSheetInfo", connection);
+                    SqlCommand command = new SqlCommand("insert_stock_balance_sheet", connection);
                     command.CommandType = CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("@TickerSymbol", securityBalanceSheet.TickerSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol", securityBalanceSheet.TickerSymbol);
                     command.Parameters.AddWithValue("@year", securityBalanceSheet.year);
-                    command.Parameters.AddWithValue("@TotalAssets", securityBalanceSheet.TotalAssets);
-                    command.Parameters.AddWithValue("@TotalStockholdersEquity", securityBalanceSheet.TotalStockholdersEquity);
+                    command.Parameters.AddWithValue("@total_assets", securityBalanceSheet.TotalAssets);
+                    command.Parameters.AddWithValue("@total_stock_holders_equity", securityBalanceSheet.TotalStockholdersEquity);
                     _logger.LogInformation("Created Command and parametrized Command");
 
                     command.ExecuteNonQuery();
@@ -351,7 +352,7 @@ namespace MakeProfits.Backend.Repository
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to Create & Execute Command : {SP_procedureName}", "InsertSecurityBalanceSheetInfo");
+                    _logger.LogError(ex, "Failed to Create & Execute Command : {SP_procedureName}", "insert_stock_balance_sheet");
                     return false;
                 }
             }
@@ -367,7 +368,7 @@ namespace MakeProfits.Backend.Repository
             }
             return false;
         }
-        public bool InsertSecurityIncomeStatementInfo(SecurityIncomeStatement securityIncomeStatement)
+        public bool InsertSecurityIncomeStatementInfo(StockIncomeStatement securityIncomeStatement)
         {
             _logger.LogInformation("Inserting the security-inestments-statement info of {TickSymbol}", securityIncomeStatement.TickerSymbol);
             try
@@ -378,13 +379,13 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogInformation("Connection Established");
                 try
                 {
-                    SqlCommand command = new SqlCommand("InsertSecurityIncomeStatementInfo", connection);
+                    SqlCommand command = new SqlCommand("insert_stock_income_statement", connection);
                     command.CommandType = CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("@TickerSymbol", securityIncomeStatement.TickerSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol", securityIncomeStatement.TickerSymbol);
                     command.Parameters.AddWithValue("@year", securityIncomeStatement.year);
-                    command.Parameters.AddWithValue("@NetIncome", securityIncomeStatement.NetIncome);
-                    command.Parameters.AddWithValue("@Revenue", securityIncomeStatement.Revenue);
+                    command.Parameters.AddWithValue("@net_income", securityIncomeStatement.NetIncome);
+                    command.Parameters.AddWithValue("@revenue", securityIncomeStatement.Revenue);
                     _logger.LogInformation("Created Command and parametrized Command");
 
                     command.ExecuteNonQuery();
@@ -392,7 +393,7 @@ namespace MakeProfits.Backend.Repository
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to Create & Execute Command : {SP_procedureName}", "InsertSecurityIncomeStatementInfo");
+                    _logger.LogError(ex, "Failed to Create & Execute Command : {SP_procedureName}", "insert_stock_income_statement");
                     return false;
                 }
             }
@@ -409,9 +410,9 @@ namespace MakeProfits.Backend.Repository
             return false;
         }
 
-        public SecurityIncomeStatement RetieveSecurityIncomeStatement(string tickSymbol, int year)
+        public StockIncomeStatement RetieveSecurityIncomeStatement(string tickSymbol, int year)
         {
-            _logger.LogInformation("Request to retieve {tickSymbol} Income-Statement for the {year}",tickSymbol,year);
+            _logger.LogInformation("Request to retieve {ticker_symbol} Income-Statement for the {year}",tickSymbol,year);
             try
             {
                 string conn = _configuration.GetConnectionString("DBConnection");
@@ -419,19 +420,19 @@ namespace MakeProfits.Backend.Repository
                 connection.Open();
                 try
                 {
-                    SqlCommand command = new SqlCommand("RetrieveSecurityIncome", connection);
+                    SqlCommand command = new SqlCommand("retrieve_stock_income_statement", connection);
                     command.CommandType = CommandType.StoredProcedure;
 
                     _logger.LogInformation("Created and Parametrized the Comamnd");
-                    command.Parameters.AddWithValue("@TickerSymbol", tickSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol", tickSymbol);
                     command.Parameters.AddWithValue("@year", year);
                     try
                     {
                         SqlDataReader reader = command.ExecuteReader();
                         _logger.LogInformation("Command Executing retrieving results");
                         if (reader.Read() && reader.HasRows)
-                        {
-                            SecurityIncomeStatement incomeStatement = new SecurityIncomeStatement();
+                        {   
+                            StockIncomeStatement incomeStatement = new StockIncomeStatement();
                             incomeStatement.TickerSymbol = reader.GetString(0);
                             incomeStatement.year = reader.GetInt32(1);
                             incomeStatement.NetIncome = reader.GetDecimal(2);
@@ -448,12 +449,12 @@ namespace MakeProfits.Backend.Repository
                     }
                     catch (SqlException ex)
                     {
-                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "RetrieveSecurityIncome");
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "insert_stock_income_statement");
                         return null;
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "RetrieveSecurityIncome");
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "insert_stock_income_statement");
                         return null;
                     }
 
@@ -481,9 +482,9 @@ namespace MakeProfits.Backend.Repository
                 return null;
             }
         }
-        public SecurityBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year)
+        public StockBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year)
         {
-            _logger.LogInformation("Request to retieve {tickSymbol} Balance-Sheet for the {year}", tickSymbol, year);
+            _logger.LogInformation("Request to retieve {ticker_symbol} Balance-Sheet for the {year}", tickSymbol, year);
             try
             {
                 string conn = _configuration.GetConnectionString("DBConnection");
@@ -491,11 +492,11 @@ namespace MakeProfits.Backend.Repository
                 connection.Open();
                 try
                 {
-                    SqlCommand command = new SqlCommand("RetrieveSecurityBalance", connection);
+                    SqlCommand command = new SqlCommand("retrieve_stock_balance_sheet", connection);
                     command.CommandType = CommandType.StoredProcedure;
 
                     _logger.LogInformation("Created and Parametrized the Comamnd");
-                    command.Parameters.AddWithValue("@TickerSymbol", tickSymbol);
+                    command.Parameters.AddWithValue("@ticker_symbol", tickSymbol);
                     command.Parameters.AddWithValue("@year", year);
                     try
                     {
@@ -503,7 +504,7 @@ namespace MakeProfits.Backend.Repository
                         _logger.LogInformation("Command Executing retrieving results");
                         if (reader.Read() && reader.HasRows)
                         {
-                            SecurityBalanceSheet balanceSheet = new SecurityBalanceSheet();
+                            StockBalanceSheet balanceSheet = new StockBalanceSheet();
                             balanceSheet.TickerSymbol = reader.GetString(0);
                             balanceSheet.year = reader.GetInt32(1);
                             balanceSheet.TotalAssets = reader.GetDecimal(2);
@@ -520,12 +521,12 @@ namespace MakeProfits.Backend.Repository
                     }
                     catch (SqlException ex)
                     {
-                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "RetrieveSecurityBalance");
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "retrieve_stock_balance_sheet");
                         return null;
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "RetrieveSecurityBalance");
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "retrieve_stock_balance_sheet");
                         return null;
                     }
 

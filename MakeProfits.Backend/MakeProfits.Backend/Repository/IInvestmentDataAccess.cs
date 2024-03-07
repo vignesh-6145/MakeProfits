@@ -1,4 +1,4 @@
-﻿using MakeProfits.Backend.Models.Securities;
+﻿using MakeProfits.Backend.Models.Stock;
 
 namespace MakeProfits.Backend.Repository
 {
@@ -7,12 +7,12 @@ namespace MakeProfits.Backend.Repository
         bool CheckSecurity(String TickSymbol);
         bool CheckSecurityBalanceSheetInfo(String TickSymbol, int year);
         bool CheckSecurityInvestmentStatementtInfo(String TickSymbol, int year);
-        bool InsertSecurity(Security security);
-        bool InsertSecurityBalanceSheetInfo(SecurityBalanceSheet securityBalanceSheet);
-        bool InsertSecurityIncomeStatementInfo(SecurityIncomeStatement securityIncomeStatement);
-        SecurityDTO RetrieveSecurityProfile(string _);
-        SecurityIncomeStatement RetieveSecurityIncomeStatement(string tickSymbol, int year);
-        SecurityBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year);    
+        bool InsertSecurity(Stock security);
+        bool InsertSecurityBalanceSheetInfo(StockBalanceSheet securityBalanceSheet);
+        bool InsertSecurityIncomeStatementInfo(StockIncomeStatement securityIncomeStatement);
+        StockDTO RetrieveSecurityProfile(string _);
+        StockIncomeStatement RetieveSecurityIncomeStatement(string tickSymbol, int year);
+        StockBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year);    
 
     }
 }
