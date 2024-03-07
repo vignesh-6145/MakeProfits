@@ -21,6 +21,7 @@ namespace MakeProfits.Backend.Controllers
             return Ok(_dataAccess.GetAllAdvisors());
             // SP - GetAdvisorInfo
         }
+
         [HttpGet("{AdvisorID}")]
         public IActionResult GetAdvisor(int AdvisorID)
         {
@@ -36,6 +37,7 @@ namespace MakeProfits.Backend.Controllers
             }
             // SP - GetAdvisorInfo
         }
+
         [HttpGet("Client/{ClientID}")]
         public IActionResult getUseAdvisors(int ClientID)
         {
@@ -50,6 +52,16 @@ namespace MakeProfits.Backend.Controllers
                 return BadRequest($"No Adviosr with ID {ClientID}");
             }
             // SP - GetAdvisorInfo
+        }
+
+        [HttpGet("{AdvisorID}/Clients")]
+        public IActionResult GetAdvisorClients(int AdvisorID)
+        {
+            var clients = _dataAccess.GetAdvisorClients(AdvisorID);
+            if (clients != null)
+                return Ok(clients);
+            else
+                return BadRequest($"No Clinets for Advisor with {AdvisorID}");
         }
     }
 }

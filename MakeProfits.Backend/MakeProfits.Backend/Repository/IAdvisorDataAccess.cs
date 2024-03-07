@@ -8,5 +8,6 @@ namespace MakeProfits.Backend.Repository
         Advisor GetAdvisor(int AdvisorID);
 
         IEnumerable<Advisor> GetClientAdvisors(int ClinetID);
+        IEnumerable<AbstractUser> GetAdvisorClients(int AdvisorID);
     }
 }
