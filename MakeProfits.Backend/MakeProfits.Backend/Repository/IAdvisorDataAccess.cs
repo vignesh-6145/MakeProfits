@@ -6,5 +6,7 @@ namespace MakeProfits.Backend.Repository
     {
         IEnumerable<Advisor> GetAllAdvisors();
         Advisor GetAdvisor(int AdvisorID);
+
+        IEnumerable<Advisor> GetClientAdvisors(int ClinetID);
     }
 }

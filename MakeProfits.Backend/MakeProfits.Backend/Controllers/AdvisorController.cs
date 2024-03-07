@@ -32,7 +32,22 @@ namespace MakeProfits.Backend.Controllers
             }
             else
             {
-                return BadRequest($"No Adviosr with ID {AdvisorID}");
+                return BadRequest($"No Adviosrs for client with ID {AdvisorID}");
+            }
+            // SP - GetAdvisorInfo
+        }
+        [HttpGet("Client/{ClientID}")]
+        public IActionResult getUseAdvisors(int ClientID)
+        {
+            _logger.LogInformation("Request to retrieve all the advisors received");
+            var advisor = _dataAccess.GetClientAdvisors(ClientID);
+            if (advisor != null)
+            {
+                return Ok(advisor);
+            }
+            else
+            {
+                return BadRequest($"No Adviosr with ID {ClientID}");
             }
             // SP - GetAdvisorInfo
         }
