@@ -35,6 +35,7 @@ namespace MakeProfits.Backend
             string? connectionString = builder.Configuration.GetConnectionString("DBConnection");
             builder.Services.AddSingleton(new UserDataAccess(connectionString));
             builder.Services.AddSingleton<IInvestmentDataAccess,InvestmentDataAccess>();
+            builder.Services.AddSingleton<IAdvisorDataAccess, AdvisorDataAccess>();
 
             //Enabling Cors
             builder.Services.AddCors(options =>
