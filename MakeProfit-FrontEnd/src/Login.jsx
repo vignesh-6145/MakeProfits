@@ -11,33 +11,39 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     try {
-      // Make API call to check credentials
-      const url = `https://localhost:7131/api/User/Login?Username=${encodeURIComponent(Username)}&Password=${encodeURIComponent(Password)}`;
+      // Prevent the default form submission
       e.preventDefault();
-      fetch(url, {
+  
+      // Get the values of Username and Password (assuming they are stored in state variables)
+      const username = encodeURIComponent(Username);
+      const password = encodeURIComponent(Password);
+  
+      // Make API call to check credentials
+      const url = `https://localhost:7131/api/User/Login`;
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
         },
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Login successful:', data);
-        if(!data)
-        {
-          alert('Incorrect credentials');
-        }
-        else{
-          alert('logged in');
-        }
-      })
-      .catch(error => {
-        console.error('Error during login:', error);
+        body: JSON.stringify({ Username: username, Password: password }),
       });
+  
+      const data = await response.json();
+  
+      console.log('Login response:', data);
+  
+      if (data === "not a user") {
+        alert('Incorrect credentials');
+      } else {
+        alert('Logged in');
+        // You can perform further actions after successful login
+      }
     } catch (error) {
       console.error('Error during login:', error);
     }
   };
+  
   const handleGoogleLogin = async (Username) => {
     try {
       // Make API call to check credentials

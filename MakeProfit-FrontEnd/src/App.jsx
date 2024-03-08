@@ -12,9 +12,12 @@ import ClientSection from './components/Clientsection';
 import AdvisorSection from './components/Advisorsection';
 import PopularComment from './components/PopularComment';
 import StockTable from './components/StockTable';
+import Quiz from './components/quiz';
 // import GoogleLoginButton from './GoogleLoginButton';
 import Home from './Home';
 import User from './User';
+import Alladvisor from './components/Alladvisor';
+import Allstrategy from './components/Allstrategy';
 function App() {
   // useEffect(()=>{
   //   function start() {
@@ -49,6 +52,10 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register/>}/>
         <Route path='/user' element={<User/>}/>
+        <Route path='/quiz' element={<Quiz/>}/>
+        <Route path='/Alladvisor' element={<Alladvisor/>}/>
+        <Route path='/Allstrategy' element={<Allstrategy/>}/>
+
         {/* <Route path='/' element={<Home />} /> */}
       </Routes>
      </Router>
