@@ -1,0 +1,66 @@
+
+    
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+.navbar{
+    height: 7vh;
+    background-color: #ebeffe;
+    color:black;
+    display: flex;
+    padding: 10px;
+    padding-left: 30px;
+    justify-content: space-between;
+    padding-top: 15px;
+    font-family: poppins;
+    position: fixed;
+    width: 97%;
+    align-items: center;
+}
+
+.user{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 10px;
+}
+a{
+    color:#55ad7b;
+    font-size: 18px;
+
+    font-weight:bold;
+    text-decoration: none;
+}
+.user> button{
+    background-color: white;
+    color:#55ad7b;
+    border-radius: 10px;
+    height: fit-content;
+    padding:10px;
+    border: #55ad7b;
+    font-size: medium;
+    font-weight: bold;
+    margin-left: 20px;
+}
+.navbar li{
+    color:#55ad7b;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 800;
+    
+}
+.navbar li:hover {
+    cursor: pointer;
+    border:0;
+    border-bottom: 2px solid #55ad7b;
+}
+.linklist{
+    display: flex;
+    width: 50% !important;
+    justify-content: space-between;
+
+}
+li{
+    list-style: none;
+}
