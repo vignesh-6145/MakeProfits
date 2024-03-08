@@ -20,12 +20,22 @@ namespace MakeProfits.Backend
                 .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
+
+            //Enabling Cors
             builder.Host.UseSerilog();
 
             // Add services to the container.
 
             builder.Services.AddControllers();
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins", builder =>
+                {
+                    builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin();
+                });
+            });
             //Adding API utilities
             builder.Services.AddScoped<IInvestmentsUtility,InvestmentsUtility>();
 
@@ -36,19 +46,7 @@ namespace MakeProfits.Backend
             builder.Services.AddSingleton(new UserDataAccess(connectionString));
             builder.Services.AddSingleton<IInvestmentDataAccess,InvestmentDataAccess>();
             builder.Services.AddSingleton<IAdvisorDataAccess, AdvisorDataAccess>();
-
-            //Enabling Cors
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAllOrigins", builder =>
-                {
-                    builder.AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowAnyOrigin();
-                });
-            });
-
-
+                  
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -72,6 +70,8 @@ namespace MakeProfits.Backend
 
             app.UseHttpsRedirection();
 
+            app.UseRouting();
+            app.UseCors("AllowAllOrigins");
             app.UseAuthorization();
 
 
