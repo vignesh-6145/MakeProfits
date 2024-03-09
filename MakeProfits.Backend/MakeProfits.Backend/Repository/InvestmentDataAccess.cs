@@ -161,7 +161,7 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogInformation("Connection Established");
                 try
                 {
-                    SqlCommand command = new SqlCommand("check_for_income_statement", connection);
+                    SqlCommand command = new SqlCommand("check_for_stock_income_statement", connection);
                     command.CommandType = CommandType.StoredProcedure;
 
                     command.Parameters.AddWithValue("@ticker_symbol", TickSymbol);
@@ -301,7 +301,7 @@ namespace MakeProfits.Backend.Repository
                     command.Parameters.AddWithValue("@ticker_symbol", security.TickerSymbol);
                     command.Parameters.AddWithValue("@cik", security.Cik);
                     command.Parameters.AddWithValue("@stock_name", security.OrganizationName);
-                    command.Parameters.AddWithValue("@updated_ob",security.UpdatedOn);
+                    command.Parameters.AddWithValue("@updated_on",security.UpdatedOn);
                     command.Parameters.AddWithValue("@price", security.Price);
                     _logger.LogInformation("Created Command and parametrized Command");
                     
