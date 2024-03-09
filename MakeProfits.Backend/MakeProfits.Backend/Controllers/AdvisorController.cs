@@ -1,4 +1,5 @@
-﻿using MakeProfits.Backend.Repository;
+﻿using MakeProfits.Backend.Models.AdvisorRequests;
+using MakeProfits.Backend.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MakeProfits.Backend.Controllers
@@ -62,6 +63,19 @@ namespace MakeProfits.Backend.Controllers
                 return Ok(clients);
             else
                 return BadRequest($"No Clinets for Advisor with {AdvisorID}");
+        }
+
+        [HttpPost("AddClient")]
+        public IActionResult AddClient([FromBody] AdvisoryRequest clientRequest)
+        {
+            if (_dataAccess.AddCient(clientRequest))
+            {
+                return Ok("Requested user to be your client");
+            }
+            else
+            {
+                return BadRequest("Something went wrong");
+            }
         }
     }
 }

@@ -52,7 +52,7 @@ namespace MakeProfits.Backend.Controllers
         {
             if (_userDataAccess.RequestAdvisory(clientRequest))
             {
-                return Ok("HEHE");
+                return Ok("Reuest posted to Adviosr");
             }
             else
             {
