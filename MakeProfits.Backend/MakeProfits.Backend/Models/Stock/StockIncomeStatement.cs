@@ -1,6 +1,6 @@
-﻿namespace MakeProfits.Backend.Models.Securities
+﻿namespace MakeProfits.Backend.Models.Stock
 {
-    public class SecurityIncomeStatement
+    public class StockIncomeStatement
     {
         public string TickerSymbol { get; set; }
         public int year { get; set; }

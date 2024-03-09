@@ -1,10 +1,10 @@
-﻿using MakeProfits.Backend.Models.Securities;
+﻿using MakeProfits.Backend.Models.Stock;
 
 namespace MakeProfits.Backend.Models
 {
     public class AbstractInvestmentInfo
     {
-        public SecurityDTO security { get; set; }
+        public StockDTO security { get; set; }
         public Dictionary<int,IncomeStatementInfo> IncomeStatements { get; set; } = new Dictionary<int, IncomeStatementInfo>();
 
         public Dictionary<int, BalanceSheetInfo> BalanceSheets { get; set; } = new Dictionary<int, BalanceSheetInfo>();

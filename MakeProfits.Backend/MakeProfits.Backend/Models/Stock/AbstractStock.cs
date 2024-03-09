@@ -1,6 +1,6 @@
-﻿namespace MakeProfits.Backend.Models.Securities
+﻿namespace MakeProfits.Backend.Models.Stock
 {
-    public class AbstractSecurity
+    public class AbstractStock
     {
         public string TickerSymbol { get; set; }
         public string Cik { get; set; }
