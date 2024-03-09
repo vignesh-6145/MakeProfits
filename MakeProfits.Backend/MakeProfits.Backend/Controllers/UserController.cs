@@ -60,6 +60,29 @@ namespace MakeProfits.Backend.Controllers
             }
         }
 
+        [HttpGet("ReadNotifications/{UserID}")]
+        public ActionResult ReadNotifications(int UserID)
+        {
+            _logger.LogInformation("Initiating the process of retreiving requests of User {UserID}",UserID);
+            var notifications = _userDataAccess.ReadNotifications(UserID);
+            if (notifications != null)
+            {
+                if (notifications.Count() == 0)
+                {
+                    return Ok("No Notifications");
+                }
+                else
+                {
+                    return Ok(notifications);
+                }                 
+            }
+            
+            else
+            {
+                return BadRequest("No  ");
+            }
+
+        }
 
     }
 }

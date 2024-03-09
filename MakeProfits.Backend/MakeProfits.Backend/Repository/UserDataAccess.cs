@@ -1,6 +1,7 @@
 ﻿using MakeProfits.Backend.Models;
 using MakeProfits.Backend.Models.AdvisorRequests;
 using MakeProfits.Models;
+using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 namespace MakeProfits.Repository
@@ -199,6 +200,91 @@ namespace MakeProfits.Repository
                 Console.WriteLine("Failed to Establish Connection, Exception raised");
                 return true;
             }
+        }
+        public IEnumerable<Notification> ReadNotifications(int UserID)
+
+        {
+            Console.WriteLine("Request to retieve all the advisors");
+            try
+            {
+                //string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(connectionstring);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("read_notifications", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@UserID",UserID);
+
+                    Console.WriteLine("Created and Parametrized the Comamnd");
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        Console.WriteLine("Command Executing retrieving results");
+                        List<Notification> notifications = new List<Notification>();
+                        Notification notification;
+                        while (reader.Read())
+                        {
+                            notification = new Notification();
+                            notification.FromUserName = reader.GetString(0);
+                            notification.FromID = reader.GetInt32(1);
+                            notification.ToUserName = reader.GetString(2);
+                            notification.ToID = reader.GetInt32(3);
+                            notification.Message = reader.GetString(4);
+
+                            //Console.WriteLine("Read Notification Received from {FromName} to {ToName}", notification.FromUserName,notification.ToUserName);
+                            Console.WriteLine($"Read Notification Received from {notification.FromUserName} to {notification.ToUserName}");
+
+                            notifications.Add(notification);
+                        }
+                        //Console.WriteLine("Retrieved {count} records", notifications.Count);
+                        Console.WriteLine($"Retrieved {notifications.Count} records" );
+                        reader.Close();
+                        connection.Close();
+                        return notifications;
+                    }
+                    catch (SqlException ex)
+                    {
+                       // Console.WriteLine(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "GetAdvisorsInfo");
+                       Console.WriteLine("Failed to Execute SP_read_notifications, Exception  raised due to DBContext");
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        //Console.WriteLine(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "GetAdvisorsInfo");
+                        Console.WriteLine("Failed to Execute SP_read_notifications, Exception  raised due to general context");
+                        return null;
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    //Console.WriteLine(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    Console.WriteLine( "Failed to Establish a command, Exception  raised due to DBContext");
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    //Console.WriteLine(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    Console.WriteLine("Failed to Establish a command, Exception  raised due general context");
+
+                    return null;
+                }
+                return null;
+            }
+            catch (SqlException ex)
+            {
+                //Console.WriteLine(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+                Console.WriteLine("Failed to Establish a connection, Exception  raised due to DBContext");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine(ex, "Failed to Establish a connection, Exception raised in genetal context");
+                Console.WriteLine("Failed to Establish a connection, Exception raised in genetal context");
+                return null;
+            }
+            return null;
         }
     }
 }
