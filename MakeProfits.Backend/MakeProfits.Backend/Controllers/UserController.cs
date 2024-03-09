@@ -1,4 +1,4 @@
-﻿using MakeProfits.Backend.Models;
+﻿using MakeProfits.Backend.Models.AdvisorRequests;
 using MakeProfits.Models;
 using MakeProfits.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +47,18 @@ namespace MakeProfits.Backend.Controllers
             }
         }
 
+        [HttpPost("RequestAdvisor")]
+        public ActionResult ChooseAdvisor([FromBody] AdvisoryRequest clientRequest)
+        {
+            if (_userDataAccess.RequestAdvisory(clientRequest))
+            {
+                return Ok("HEHE");
+            }
+            else
+            {
+                return BadRequest("Failed to request");
+            }
+        }
 
 
     }

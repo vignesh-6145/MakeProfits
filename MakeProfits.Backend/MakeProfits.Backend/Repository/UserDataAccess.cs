@@ -1,4 +1,5 @@
 ﻿using MakeProfits.Backend.Models;
+using MakeProfits.Backend.Models.AdvisorRequests;
 using MakeProfits.Models;
 using System.Data;
 using System.Data.SqlClient;
@@ -139,5 +140,65 @@ namespace MakeProfits.Repository
             }
         }
 
+        public bool RequestAdvisory(AdvisoryRequest advisoryRequest)
+        {
+            advisoryRequest.RequestBY = "C";
+            try
+            {
+                SqlConnection conn = new SqlConnection(connectionstring);
+                conn.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("client_request_advisor",conn);
+                    command.CommandType= CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@clientID",advisoryRequest.ClientID);
+                    command.Parameters.AddWithValue("@advisorID",advisoryRequest.AdvisorID);
+                    command.Parameters.AddWithValue("@stratergyID", advisoryRequest.StratergyID);
+                    command.Parameters.AddWithValue("@Message",advisoryRequest.Message);
+                    Console.WriteLine("Created and Parametrized  command");
+
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        
+                        if(reader.Read() && reader.HasRows)
+                        {
+                            Console.WriteLine($"RESULT {reader.GetString(0)}");
+                            return true;
+                        }
+                        return false;
+                    }
+                    catch (SqlException ex)
+                    {
+                        Console.WriteLine("Failed to read  result, Exception raised in DB");
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Failed to read  result, Exception raised");
+                        return true;
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine("Failed to Create  Command, Exception raised in DB");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Failed to Create  Command, Exception raised");
+                    return true;
+                }
+            }
+            catch(SqlException ex) {
+                Console.WriteLine("Failed to Establish Connection, Exception raised in DB");   
+                return false;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Failed to Establish Connection, Exception raised");
+                return true;
+            }
+        }
     }
 }
