@@ -20,23 +20,13 @@ namespace MakeProfits.Backend
                 .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
+
+            //Enabling Cors
             builder.Host.UseSerilog();
 
             // Add services to the container.
 
             builder.Services.AddControllers();
-
-            //Adding API utilities
-            builder.Services.AddScoped<IInvestmentsUtility,InvestmentsUtility>();
-
-
-            //Database connections
-
-            string? connectionString = builder.Configuration.GetConnectionString("DBConnection");
-            builder.Services.AddSingleton(new UserDataAccess(connectionString));
-            builder.Services.AddSingleton<IInvestmentDataAccess,InvestmentDataAccess>();
-
-            //Enabling Cors
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins", builder =>
@@ -46,8 +36,17 @@ namespace MakeProfits.Backend
                     .AllowAnyOrigin();
                 });
             });
+            //Adding API utilities
+            builder.Services.AddScoped<IInvestmentsUtility,InvestmentsUtility>();
 
 
+            //Database connections
+
+            string? connectionString = builder.Configuration.GetConnectionString("DBConnection");
+            builder.Services.AddSingleton(new UserDataAccess(connectionString));
+            builder.Services.AddSingleton<IInvestmentDataAccess,InvestmentDataAccess>();
+            builder.Services.AddSingleton<IAdvisorDataAccess, AdvisorDataAccess>();
+                  
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -71,6 +70,8 @@ namespace MakeProfits.Backend
 
             app.UseHttpsRedirection();
 
+            app.UseRouting();
+            app.UseCors("AllowAllOrigins");
             app.UseAuthorization();
 
 
