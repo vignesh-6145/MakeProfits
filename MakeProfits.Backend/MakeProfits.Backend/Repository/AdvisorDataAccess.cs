@@ -1,5 +1,5 @@
 ﻿using MakeProfits.Backend.Models;
-using MakeProfits.Backend.Models.Securities;
+using MakeProfits.Backend.Models.Stock;
 using System.Data.SqlClient;
 using System.Data;
 
