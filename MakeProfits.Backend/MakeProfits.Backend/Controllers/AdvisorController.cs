@@ -68,6 +68,22 @@ namespace MakeProfits.Backend.Controllers
         [HttpPost("AddClient")]
         public IActionResult AddClient([FromBody] AdvisoryRequest clientRequest)
         {
+            /*
+             * CREATE PROCEDURE adviser_request_client 
+	            @clientID INTEGER
+	            ,@advisorID INTEGER
+	            ,@stratergyID INTEGER = 1
+	            ,@Message NVARCHAR(50) = 'Advisor added you as a client'
+            AS
+            BEGIN
+	            INSERT INTO client_advisor_funds(clientid,advisorid,strategyID) VALUES (@clientID,@advisorID,@stratergyID);
+	            INSERT INTO advisory_requests(clientID,advisorID,stratergyID,request_by) VALUES(@clientID,@advisorID,@stratergyID,'A');
+	            INSERT INTO Notifications(fromID,toID,message) VALUES (@clientID,@advisorID,@Message);
+
+	            SELECT @@ROWCOUNT;
+            END
+             */
+            //As of now noe approval is required, but in future it was required, check stored procedure for logic
             if (_dataAccess.AddCient(clientRequest))
             {
                 return Ok("Requested user to be your client");
