@@ -1,4 +1,5 @@
 ﻿
+using MakeProfits.Backend.Models;
 using MakeProfits.Backend.Models.Stock;
 using System.Data;
 using System.Data.SqlClient;
@@ -552,6 +553,77 @@ namespace MakeProfits.Backend.Repository
             {
                 _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
                 return null;
+            }
+        }
+
+        public bool OptinStratergy(InvestmentStratergy investmentStratergy)
+        {
+            _logger.LogInformation("Request to opt-in {StratergyID} for client {clientID}",investmentStratergy.StratergyID,investmentStratergy.ClientID);
+            try
+            {
+                string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(conn);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("optin_stratergy", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    _logger.LogInformation("Created and Parametrized the Comamnd");
+                    command.Parameters.AddWithValue("@clientID",investmentStratergy.ClientID);
+                    command.Parameters.AddWithValue("@advisorID",investmentStratergy.AdvisorID);
+                    command.Parameters.AddWithValue("@stratergyID", investmentStratergy.StratergyID);
+                    command.Parameters.AddWithValue("@amount",investmentStratergy.amount);
+                    command.Parameters.AddWithValue("@newStatus", investmentStratergy.status);
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        _logger.LogInformation("Command Executing retrieving results");
+                        if (reader.Read() && reader.HasRows)
+                        {
+                            if (reader.GetInt32(0) == 1)
+                                return true;
+                            else
+                                return false;
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Failed to read reaults");
+                            return false;
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "optin_stratergy");
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "optin_stratergy");
+                        return false;
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    return false;
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
+                return false;
             }
         }
     }
