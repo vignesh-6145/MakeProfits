@@ -2,6 +2,7 @@
 using MakeProfits.Backend.Models.Stock;
 using System.Data.SqlClient;
 using System.Data;
+using MakeProfits.Backend.Models.AdvisorRequests;
 
 namespace MakeProfits.Backend.Repository
 {
@@ -345,6 +346,71 @@ namespace MakeProfits.Backend.Repository
                 return null;
             }
             return null;
+        }
+
+
+        public bool AddCient(AdvisoryRequest advisoryRequest)
+        {
+            _logger.LogInformation("Intiating the process of Adding client to the Advisor");
+            advisoryRequest.RequestBY = "A";
+            try
+            {
+                var connectionstring = _configuration.GetConnectionString("DBConnection");
+                SqlConnection conn = new SqlConnection(connectionstring);
+                conn.Open();
+                _logger.LogInformation("Connection Established");
+                try
+                {
+                    SqlCommand command = new SqlCommand("adviser_request_client", conn);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@clientID", advisoryRequest.ClientID);
+                    command.Parameters.AddWithValue("@advisorID", advisoryRequest.AdvisorID);
+                    command.Parameters.AddWithValue("@stratergyID", advisoryRequest.StratergyID);
+                    command.Parameters.AddWithValue("@Message", advisoryRequest.Message);
+                    _logger.LogInformation("Created and Parametrized  command");
+
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.Read() && reader.GetInt32(0)==1)
+                        { 
+                            return true;
+                        }
+                        return false;
+                    }
+                    catch (SqlException ex)
+                    {
+                        Console.WriteLine("Failed to read  result, Exception raised in DB");
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Failed to read  result, Exception raised");
+                        return true;
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Create  Command, Exception raised in DB");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Create  Command, Exception raised");
+                    return true;
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex,"Failed to Establish Connection, Exception raised in DB");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"Failed to Establish Connection, Exception raised");
+                return true;
+            }
         }
 
     }
