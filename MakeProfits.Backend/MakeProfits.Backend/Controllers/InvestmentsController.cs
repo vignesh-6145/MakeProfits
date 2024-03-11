@@ -43,6 +43,18 @@ namespace MakeProfits.Backend.Controllers
                 return BadRequest("Something went wrong");
             }
         }
+        [HttpPost("optoutstratergy")]
+        public ActionResult OptOutStratergy([FromBody] InvestmentStratergy investmentStratergy)
+        {
+            if (_dataAccess.OptoutStratergy(investmentStratergy))
+            {
+                return Ok("Transaction completed successfully");
+            }
+            else
+            {
+                return BadRequest("Something went wrong");
+            }
+        }
     }
 
 

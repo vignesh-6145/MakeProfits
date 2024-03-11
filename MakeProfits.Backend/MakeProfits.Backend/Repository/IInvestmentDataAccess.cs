@@ -16,6 +16,7 @@ namespace MakeProfits.Backend.Repository
         StockBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year);
 
         bool OptinStratergy(InvestmentStratergy investmentStratergy);
+        bool OptoutStratergy(InvestmentStratergy investmentStratergy);
 
     }
 }
