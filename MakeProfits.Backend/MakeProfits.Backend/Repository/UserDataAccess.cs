@@ -4,6 +4,7 @@ using MakeProfits.Models;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection.PortableExecutable;
 namespace MakeProfits.Repository
 {
     public class UserDataAccess
@@ -33,7 +34,7 @@ namespace MakeProfits.Repository
                     command.Parameters.AddWithValue("@AgentID",user.AgentID);
                     command.Parameters.AddWithValue("@FirstName",user.FirstName);
                     command.Parameters.AddWithValue("@LastName",user.LastName);
-                    command.Parameters.AddWithValue("@Company",user.Company);
+                    command.Parameters.AddWithValue("@Company","<>");
 
                     command.Parameters.AddWithValue("@UserName",user.UserName);
                     command.Parameters.AddWithValue("@Password",user.Password);
@@ -74,8 +75,8 @@ namespace MakeProfits.Repository
                             user.EmailAddress = reader.GetString(7);
                             user.AdvisorName = reader.GetString(8); 
                             user.AgentName = reader.GetString(9);
-                            user.Company = reader.GetString(10);
                             user.Role = reader.GetString(11);
+                            
 
                             return user;
                         }
@@ -165,34 +166,42 @@ namespace MakeProfits.Repository
                         if(reader.Read() && reader.HasRows)
                         {
                             Console.WriteLine($"RESULT {reader.GetString(0)}");
+                            reader.Close();
+                            conn.Close();
                             return true;
                         }
+                        reader.Close();
+                        conn.Close();
                         return false;
                     }
                     catch (SqlException ex)
                     {
                         Console.WriteLine("Failed to read  result, Exception raised in DB");
+                        conn.Close();
                         return false;
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("Failed to read  result, Exception raised");
+                        conn.Close();
                         return true;
                     }
                 }
                 catch (SqlException ex)
                 {
                     Console.WriteLine("Failed to Create  Command, Exception raised in DB");
+                    conn.Close();
                     return false;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Failed to Create  Command, Exception raised");
+                    conn.Close();
                     return true;
                 }
             }
             catch(SqlException ex) {
-                Console.WriteLine("Failed to Establish Connection, Exception raised in DB");   
+                Console.WriteLine("Failed to Establish Connection, Exception raised in DB");
                 return false;
             }
             catch(Exception ex)
@@ -247,12 +256,14 @@ namespace MakeProfits.Repository
                     {
                        // Console.WriteLine(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "GetAdvisorsInfo");
                        Console.WriteLine("Failed to Execute SP_read_notifications, Exception  raised due to DBContext");
+                        connection.Close();
                         return null;
                     }
                     catch (Exception ex)
                     {
                         //Console.WriteLine(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "GetAdvisorsInfo");
                         Console.WriteLine("Failed to Execute SP_read_notifications, Exception  raised due to general context");
+                        connection.Close();
                         return null;
                     }
 
@@ -261,16 +272,17 @@ namespace MakeProfits.Repository
                 {
                     //Console.WriteLine(ex, "Failed to Establish a command, Exception  raised due to DBContext");
                     Console.WriteLine( "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
                     return null;
                 }
                 catch (Exception ex)
                 {
                     //Console.WriteLine(ex, "Failed to Establish a command, Exception raised in genetal context");
                     Console.WriteLine("Failed to Establish a command, Exception  raised due general context");
+                    connection.Close();
 
                     return null;
                 }
-                return null;
             }
             catch (SqlException ex)
             {
@@ -284,7 +296,6 @@ namespace MakeProfits.Repository
                 Console.WriteLine("Failed to Establish a connection, Exception raised in genetal context");
                 return null;
             }
-            return null;
         }
     }
 }

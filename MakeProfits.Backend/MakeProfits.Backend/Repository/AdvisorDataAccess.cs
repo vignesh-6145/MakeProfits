@@ -1,8 +1,8 @@
 ﻿using MakeProfits.Backend.Models;
-using MakeProfits.Backend.Models.Stock;
 using System.Data.SqlClient;
 using System.Data;
 using MakeProfits.Backend.Models.AdvisorRequests;
+using System.Reflection.PortableExecutable;
 
 namespace MakeProfits.Backend.Repository
 {
@@ -61,11 +61,13 @@ namespace MakeProfits.Backend.Repository
                     catch (SqlException ex)
                     {
                         _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "GetAdvisorsInfo");
+                        connection.Close();
                         return null;
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "GetAdvisorsInfo");
+                        connection.Close();
                         return null;
                     }
 
@@ -73,14 +75,15 @@ namespace MakeProfits.Backend.Repository
                 catch (SqlException ex)
                 {
                     _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
                     return null;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    connection.Close();
                     return null;
                 }
-                return null;
             }
             catch (SqlException ex)
             {
@@ -92,7 +95,6 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
                 return null;
             }
-            return null;
         }
         public Advisor GetAdvisor(int AdvisorID)
         {
@@ -135,6 +137,8 @@ namespace MakeProfits.Backend.Repository
                         else
                         {
                             _logger.LogInformation("No Adviosr found with the given AdvisorID");
+                            reader.Close();
+                            connection.Close();
                             return null;
                         }
                         
@@ -142,11 +146,13 @@ namespace MakeProfits.Backend.Repository
                     catch (SqlException ex)
                     {
                         _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "GetAdvisorsInfo");
+                        connection.Close();
                         return null;
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "GetAdvisorsInfo");
+                        connection.Close();
                         return null;
                     }
 
@@ -154,14 +160,15 @@ namespace MakeProfits.Backend.Repository
                 catch (SqlException ex)
                 {
                     _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
                     return null;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    connection.Close();
                     return null;
                 }
-                return null;
             }
             catch (SqlException ex)
             {
@@ -173,7 +180,6 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
                 return null;
             }
-            return null;
         }
         public IEnumerable<Advisor> GetClientAdvisors(int ClientID)
         {
@@ -221,6 +227,8 @@ namespace MakeProfits.Backend.Repository
                         else
                         {
                             _logger.LogInformation("No Adviosr found for the client");
+                            reader.Close();
+                            connection.Close();
                             return null;
                         }
 
@@ -228,11 +236,13 @@ namespace MakeProfits.Backend.Repository
                     catch (SqlException ex)
                     {
                         _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "GetUserAdvisors");
+                        connection.Close();
                         return null;
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "GetUserAdvisors");
+                        connection.Close();
                         return null;
                     }
 
@@ -240,11 +250,13 @@ namespace MakeProfits.Backend.Repository
                 catch (SqlException ex)
                 {
                     _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
                     return null;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    connection.Close();
                     return null;
                 }
                 return null;
@@ -259,7 +271,6 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
                 return null;
             }
-            return null;
         }
 
         public IEnumerable<AbstractUser> GetAdvisorClients(int AdvisorID)
@@ -296,6 +307,7 @@ namespace MakeProfits.Backend.Repository
                                 user.State = reader.GetString(4);
                                 user.EmailAddress = reader.GetString(5);
                                 user.PhoneNumber = reader.GetString(6);
+                                user.funds = reader.GetDecimal(7);
 
                                 _logger.LogInformation("Retrieved User with name : {UserName}", user.FirstName);
                                 users.Add(user);
@@ -307,6 +319,9 @@ namespace MakeProfits.Backend.Repository
                         else
                         {
                             _logger.LogInformation("No Adviosr found for the client");
+
+                            reader.Close();
+                            connection.Close();
                             return null;
                         }
 
@@ -314,11 +329,13 @@ namespace MakeProfits.Backend.Repository
                     catch (SqlException ex)
                     {
                         _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "GetAdvisorClients");
+                        connection.Close();
                         return null;
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "GetAdvisorClients");
+                        connection.Close();
                         return null;
                     }
 
@@ -326,14 +343,15 @@ namespace MakeProfits.Backend.Repository
                 catch (SqlException ex)
                 {
                     _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
                     return null;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    connection.Close();
                     return null;
                 }
-                return null;
             }
             catch (SqlException ex)
             {
@@ -345,7 +363,6 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
                 return null;
             }
-            return null;
         }
 
 
@@ -374,7 +391,10 @@ namespace MakeProfits.Backend.Repository
                         SqlDataReader reader = command.ExecuteReader();
 
                         if (reader.Read() && reader.GetInt32(0)==1)
-                        { 
+                        {
+
+                            reader.Close();
+                            conn.Close();
                             return true;
                         }
                         return false;
@@ -382,22 +402,26 @@ namespace MakeProfits.Backend.Repository
                     catch (SqlException ex)
                     {
                         Console.WriteLine("Failed to read  result, Exception raised in DB");
+                        conn.Close();
                         return false;
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("Failed to read  result, Exception raised");
+                        conn.Close();
                         return true;
                     }
                 }
                 catch (SqlException ex)
                 {
                     _logger.LogError(ex, "Failed to Create  Command, Exception raised in DB");
+                    conn.Close();
                     return false;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to Create  Command, Exception raised");
+                    conn.Close();
                     return true;
                 }
             }

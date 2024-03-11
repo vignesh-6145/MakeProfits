@@ -1,4 +1,4 @@
-﻿using MakeProfits.Backend.Models.Stock;
+﻿using MakeProfits.Backend.Models.Investments.Stocks;
 
 namespace MakeProfits.Backend.Models
 {

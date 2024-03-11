@@ -1,5 +1,5 @@
 ﻿using MakeProfits.Backend.Models;
-using MakeProfits.Backend.Models.Stock;
+using MakeProfits.Backend.Models.Investments.Stocks;
 
 namespace MakeProfits.Backend.Repository
 {
@@ -17,6 +17,7 @@ namespace MakeProfits.Backend.Repository
 
         bool OptinStratergy(InvestmentStratergy investmentStratergy);
         bool OptoutStratergy(InvestmentStratergy investmentStratergy);
+        Portfolio GetUserProtfolio(int ClientID, string _="All");
 
     }
 }

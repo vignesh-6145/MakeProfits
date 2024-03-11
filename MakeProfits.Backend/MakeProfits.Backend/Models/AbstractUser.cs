@@ -10,7 +10,7 @@
         public string State { get; set; }
         public string EmailAddress { get; set; }
         public string PhoneNumber { get; set; }
-        public string Company { get; set; }
+        public decimal funds { get; set; }
 
     }
 }

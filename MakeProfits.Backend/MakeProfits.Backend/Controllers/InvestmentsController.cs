@@ -55,6 +55,17 @@ namespace MakeProfits.Backend.Controllers
                 return BadRequest("Something went wrong");
             }
         }
+        [HttpGet("User/{UserID}/portfolio")]
+        public ActionResult GetUserPortfolio(int UserID,string InvestmentType = "All")
+        {
+            _logger.LogInformation("Initiaitng the process of Retrievng user {Type} Portfolio of client",InvestmentType,UserID);
+            var userPortfolio = _dataAccess.GetUserProtfolio(UserID,InvestmentType);
+            if(userPortfolio == null)
+            {
+                return BadRequest("User Portfolio is Empty");
+            }
+            return Ok(userPortfolio);
+        }
     }
 
 
