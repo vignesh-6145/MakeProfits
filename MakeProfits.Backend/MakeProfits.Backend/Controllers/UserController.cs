@@ -76,7 +76,7 @@ namespace MakeProfits.Backend.Controllers
         }
 
         [HttpGet("ReadNotifications/{UserID}")]
-        public ActionResult ReadNotifications(int UserID)
+        public ActionResult ReadNotifications(Guid UserID)
         {
             _logger.LogInformation("Initiating the process of retreiving requests of User {UserID}",UserID);
             var notifications = _userDataAccess.ReadNotifications(UserID);

@@ -2,9 +2,9 @@
 {
     public class MutualFundInvestment
     {
-        public int ClientID { get; set; }
-        public int StratergyID { get; set; }
-        public int MutualFundID { get; set; }
+        public Guid ClientID { get; set; }
+        public Guid StratergyID { get; set; }
+        public Guid MutualFundID { get; set; }
         public String MutualFundName { get; set; }
         public decimal MutualFundPrice { get; set; }
         public int MutualFundQuantity { get; set; }

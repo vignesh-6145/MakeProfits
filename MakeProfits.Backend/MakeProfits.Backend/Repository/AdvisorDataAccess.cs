@@ -47,7 +47,7 @@ namespace MakeProfits.Backend.Repository
                             advisor.State = reader.GetString(4);
                             advisor.EmailAddress = reader.GetString(5);
                             advisor.PhoneNumber = reader.GetString(6);
-                            advisor.Rating = reader.GetInt32(7);
+                            advisor.Rating = reader.GetDecimal(7);
 
                             _logger.LogInformation("Retrieved Advisor with name : {AdvisorName}",advisor.FirstName);
 
@@ -96,7 +96,7 @@ namespace MakeProfits.Backend.Repository
                 return null;
             }
         }
-        public Advisor GetAdvisor(int AdvisorID)
+        public Advisor GetAdvisor(Guid AdvisorID)
         {
             _logger.LogInformation("Request to retieve the advisor with ID : {AdvisorID}",AdvisorID);
             try
@@ -127,7 +127,7 @@ namespace MakeProfits.Backend.Repository
                             advisor.State = reader.GetString(4);
                             advisor.EmailAddress = reader.GetString(5);
                             advisor.PhoneNumber = reader.GetString(6);
-                            advisor.Rating = reader.GetInt32(7);
+                            advisor.Rating = reader.GetDecimal(7);
 
                             _logger.LogInformation("Retrieved Advisor with name : {AdvisorName}", advisor.FirstName);
                             reader.Close();
@@ -181,7 +181,7 @@ namespace MakeProfits.Backend.Repository
                 return null;
             }
         }
-        public IEnumerable<Advisor> GetClientAdvisors(int ClientID)
+        public IEnumerable<Advisor> GetClientAdvisors(Guid ClientID)
         {
             _logger.LogInformation("Request to retieve the advisors for client with ID : {ClientID}", ClientID);
             try
@@ -215,7 +215,7 @@ namespace MakeProfits.Backend.Repository
                                 advisor.State = reader.GetString(4);
                                 advisor.EmailAddress = reader.GetString(5);
                                 advisor.PhoneNumber = reader.GetString(6);
-                                advisor.Rating = reader.GetInt32(7);
+                                advisor.Rating = reader.GetDecimal(7);
 
                                 _logger.LogInformation("Retrieved Advisor with name : {AdvisorName}", advisor.FirstName);
                                 advisors.Add(advisor);
@@ -273,7 +273,7 @@ namespace MakeProfits.Backend.Repository
             }
         }
 
-        public IEnumerable<AbstractUser> GetAdvisorClients(int AdvisorID)
+        public IEnumerable<AbstractUser> GetAdvisorClients(Guid AdvisorID)
         {
             _logger.LogInformation("Request to retieve the advisors for client with ID : {AdvisorID}", AdvisorID);
             try

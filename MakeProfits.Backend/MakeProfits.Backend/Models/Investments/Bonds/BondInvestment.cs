@@ -2,9 +2,9 @@
 {
     public class BondInvestment
     {
-        public int ClientID { get; set; }
-        public int StratergyID { get; set; }
-        public int BondID { get; set; }
+        public Guid ClientID { get; set; }
+        public Guid StratergyID { get; set; }
+        public Guid BondID { get; set; }
         public string BondName { get; set; }
         public decimal BondPrice { get; set; }
         public int BondQuantity {  get; set; }

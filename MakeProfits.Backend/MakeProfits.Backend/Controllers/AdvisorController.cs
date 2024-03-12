@@ -24,7 +24,7 @@ namespace MakeProfits.Backend.Controllers
         }
 
         [HttpGet("{AdvisorID}")]
-        public IActionResult GetAdvisor(int AdvisorID)
+        public IActionResult GetAdvisor(Guid AdvisorID)
         {
             _logger.LogInformation("Request to retrieve all the advisors received");
             var advisor = _dataAccess.GetAdvisor(AdvisorID);
@@ -40,7 +40,7 @@ namespace MakeProfits.Backend.Controllers
         }
 
         [HttpGet("Client/{ClientID}")]
-        public IActionResult getUseAdvisors(int ClientID)
+        public IActionResult getUseAdvisors(Guid ClientID)
         {
             _logger.LogInformation("Request to retrieve all the advisors received");
             var advisor = _dataAccess.GetClientAdvisors(ClientID);
@@ -56,7 +56,7 @@ namespace MakeProfits.Backend.Controllers
         }
 
         [HttpGet("{AdvisorID}/Clients")]
-        public IActionResult GetAdvisorClients(int AdvisorID)
+        public IActionResult GetAdvisorClients(Guid AdvisorID)
         {
             var clients = _dataAccess.GetAdvisorClients(AdvisorID);
             if (clients != null)

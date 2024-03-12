@@ -2,6 +2,6 @@
 {
     public class AdvisorMutualFundInvestment : MutualFundInvestment
     {
-        public int AdvisorID {  get; set; }
+        public Guid AdvisorID {  get; set; }
     }
 }

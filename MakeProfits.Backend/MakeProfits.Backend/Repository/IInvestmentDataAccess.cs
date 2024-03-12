@@ -18,8 +18,8 @@ namespace MakeProfits.Backend.Repository
 
         bool OptinStratergy(InvestmentStratergy investmentStratergy);
         bool OptoutStratergy(InvestmentStratergy investmentStratergy);
-        Portfolio GetUserProtfolio(int ClientID, string _="All");
-        AdvisorPortfolio GetAdvisorPortfolio(int AdvisorID, string _ = "All");
+        Portfolio GetUserProtfolio(Guid ClientID, string _="All");
+        AdvisorPortfolio GetAdvisorPortfolio(Guid AdvisorID, string _ = "All");
 
     }
 }

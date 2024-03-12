@@ -56,7 +56,7 @@ namespace MakeProfits.Backend.Controllers
             }
         }
         [HttpGet("User/{UserID}/portfolio")]
-        public ActionResult GetUserPortfolio(int UserID,string InvestmentType = "All")
+        public ActionResult GetUserPortfolio(Guid UserID,string InvestmentType = "All")
         {
             _logger.LogInformation("Initiaitng the process of Retrievng user {Type} Portfolio of client",InvestmentType,UserID);
             var userPortfolio = _dataAccess.GetUserProtfolio(UserID,InvestmentType);
@@ -67,7 +67,7 @@ namespace MakeProfits.Backend.Controllers
             return Ok(userPortfolio);
         }
         [HttpGet("Advisor/{AdvisorID}/portfolio")]
-        public ActionResult GetAdvisorPortfolio(int AdvisorID,string InvestmentType = "All")
+        public ActionResult GetAdvisorPortfolio(Guid AdvisorID,string InvestmentType = "All")
         {
             _logger.LogInformation("Initiating the process of Retrieving Advisor portfolio");
             return Ok(_dataAccess.GetAdvisorPortfolio(AdvisorID, InvestmentType));

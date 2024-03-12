@@ -210,7 +210,7 @@ namespace MakeProfits.Repository
                 return true;
             }
         }
-        public IEnumerable<Notification> ReadNotifications(int UserID)
+        public IEnumerable<Notification> ReadNotifications(Guid UserID)
 
         {
             Console.WriteLine("Request to retieve all the advisors");
@@ -236,9 +236,9 @@ namespace MakeProfits.Repository
                         {
                             notification = new Notification();
                             notification.FromUserName = reader.GetString(0);
-                            notification.FromID = reader.GetInt32(1);
+                            notification.FromID = reader.GetGuid(1);
                             notification.ToUserName = reader.GetString(2);
-                            notification.ToID = reader.GetInt32(3);
+                            notification.ToID = reader.GetGuid(3);
                             notification.Message = reader.GetString(4);
 
                             //Console.WriteLine("Read Notification Received from {FromName} to {ToName}", notification.FromUserName,notification.ToUserName);

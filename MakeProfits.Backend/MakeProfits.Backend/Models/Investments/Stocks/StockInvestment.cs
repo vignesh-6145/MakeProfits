@@ -2,9 +2,9 @@
 {
     public class StockInvestment
     {
-        public int ClientID { get; set; }
-        public int StratergyID {  get; set; }
-        public int StockID { get; set; }
+        public Guid ClientID { get; set; }
+        public Guid StratergyID {  get; set; }
+        public Guid StockID { get; set; }
         public string StockName {  get; set; }
         public decimal StockPrice { get; set; }
         public int StockQuantity { get; set; }

@@ -2,7 +2,7 @@
 {
     public class Bond
     {
-        public int BondID { get; set; }
+        public Guid BondID { get; set; }
         public string ISIN { get; set; }
         public string BondName { get; set; }
         public string BondType { get; set; }

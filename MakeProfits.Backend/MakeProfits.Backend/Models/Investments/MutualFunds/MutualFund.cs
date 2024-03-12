@@ -4,7 +4,7 @@
     {
         //beta > 1 more volatile than benchmark
         //beta < 1 less volatile than benchmark
-        public int MF_ID {  get; set; }
+        public Guid MF_ID {  get; set; }
         public string ISIN { get; set; }
         public string symbol { get; set; }
         public decimal Beta { get; set; } // volaility

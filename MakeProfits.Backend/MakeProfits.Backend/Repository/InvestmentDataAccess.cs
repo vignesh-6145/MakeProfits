@@ -47,7 +47,7 @@ namespace MakeProfits.Backend.Repository
                                 _logger.LogInformation("{ticker_symbol} was already stored in DB", TickSymbol);
 
                                 TimeSpan updateDiff = DateTime.UtcNow.Subtract(lastUpdatedOn);
-                                if(updateDiff.Days > 1)
+                                if(updateDiff.Days >= 1)
                                 {
                                     _logger.LogInformation("The price of  {ticker_symbol} haven't updated, have to make a API Call", TickSymbol);
                                     reader.Close();
@@ -784,7 +784,7 @@ namespace MakeProfits.Backend.Repository
             }
         }
 
-        public Portfolio GetUserProtfolio(int UserID,string InvestmentType="All")
+        public Portfolio GetUserProtfolio(Guid UserID,string InvestmentType="All")
         {
             _logger.LogInformation("Retrieving Portfolio of the user");
             Portfolio userPortfolio = new Portfolio();
@@ -808,7 +808,7 @@ namespace MakeProfits.Backend.Repository
                 _logger.LogInformation("Retrieving MutualFund Portfolio of the user");
                 userPortfolio.MutualFunds = RetrieveMutualFundInvestments(UserID);
                 userPortfolio.MutualInvestmentValue = userPortfolio.MutualFunds.Sum(mf => mf.InvestmentValue);
-                userPortfolio.MutualInvestmentValue += userPortfolio.MutualInvestmentValue;
+                userPortfolio.TotalInvestmentValue += userPortfolio.MutualInvestmentValue;
             }
 
             //calculating the percentages
@@ -819,7 +819,7 @@ namespace MakeProfits.Backend.Repository
             return userPortfolio;
         }
 
-        public List<StockInvestment> RetrieveStockInvestments(int ClientID)
+        public List<StockInvestment> RetrieveStockInvestments(Guid ClientID)
         {
             _logger.LogInformation("Request to retrieve all the StockInvestments of {ClinetID}",ClientID);
             try
@@ -845,8 +845,8 @@ namespace MakeProfits.Backend.Repository
                             {
                                 StockInvestment = new StockInvestment();
                                 StockInvestment.ClientID = ClientID;
-                                StockInvestment.StratergyID = reader.GetInt32(0);
-                                StockInvestment.StockID = reader.GetInt32(1);
+                                StockInvestment.StratergyID = reader.GetGuid(0);
+                                StockInvestment.StockID = reader.GetGuid(1);
                                 StockInvestment.StockName = reader.GetString(2);
                                 StockInvestment.StockPrice = reader.GetDecimal(3);
                                 StockInvestment.StockQuantity = reader.GetInt32(4);
@@ -903,7 +903,7 @@ namespace MakeProfits.Backend.Repository
 
         }
 
-        public List<BondInvestment> RetrieveBondInvestments(int ClientID)
+        public List<BondInvestment> RetrieveBondInvestments(Guid ClientID)
         {
             _logger.LogInformation("Request to retrieve all the StockInvestments of {ClinetID}", ClientID);
             try
@@ -929,8 +929,8 @@ namespace MakeProfits.Backend.Repository
                             {
                                 BondInvestment = new BondInvestment();
                                 BondInvestment.ClientID = ClientID;
-                                BondInvestment.StratergyID = reader.GetInt32(0);
-                                BondInvestment.BondID = reader.GetInt32(1);
+                                BondInvestment.StratergyID = reader.GetGuid(0);
+                                BondInvestment.BondID = reader.GetGuid(1);
                                 BondInvestment.BondName = reader.GetString(2);
                                 BondInvestment.BondPrice = reader.GetDecimal(3);
                                 BondInvestment.BondQuantity = reader.GetInt32(4);
@@ -987,7 +987,7 @@ namespace MakeProfits.Backend.Repository
             }
 
         }
-        public List<MutualFundInvestment> RetrieveMutualFundInvestments(int ClientID)
+        public List<MutualFundInvestment> RetrieveMutualFundInvestments(Guid ClientID)
         {
             _logger.LogInformation("Request to retrieve all the StockInvestments of {ClinetID}", ClientID);
             try
@@ -1013,8 +1013,8 @@ namespace MakeProfits.Backend.Repository
                             {
                                 MutualFundInvestment = new MutualFundInvestment();
                                 MutualFundInvestment.ClientID = ClientID;
-                                MutualFundInvestment.StratergyID = reader.GetInt32(0);
-                                MutualFundInvestment.MutualFundID = reader.GetInt32(1);
+                                MutualFundInvestment.StratergyID = reader.GetGuid(0);
+                                MutualFundInvestment.MutualFundID = reader.GetGuid(1);
                                 MutualFundInvestment.MutualFundName = reader.GetString(2);
                                 MutualFundInvestment.MutualFundPrice = reader.GetDecimal(3);
                                 MutualFundInvestment.MutualFundQuantity = reader.GetInt32(4);
@@ -1072,7 +1072,7 @@ namespace MakeProfits.Backend.Repository
 
         }
 
-        public AdvisorPortfolio GetAdvisorPortfolio(int AdvisorID, string InvestmentType = "All")
+        public AdvisorPortfolio GetAdvisorPortfolio(Guid AdvisorID, string InvestmentType = "All")
         {
             _logger.LogInformation("Initiating the process of Retrieving Advisor portfolio");
             AdvisorPortfolio advisorPortfolio = new AdvisorPortfolio();
@@ -1101,7 +1101,7 @@ namespace MakeProfits.Backend.Repository
 
             return advisorPortfolio;
         }
-        public List<AdvisorStockInvestment> RetrieveAdvisorStockInvestments(int AdvisorID)
+        public List<AdvisorStockInvestment> RetrieveAdvisorStockInvestments(Guid AdvisorID)
         {
             _logger.LogInformation("Request to retrieve all the StockInvestments of Advisor {AdviosrID}", AdvisorID);
             try
@@ -1126,10 +1126,10 @@ namespace MakeProfits.Backend.Repository
                             while (reader.Read())
                             {
                                 AdvisorStockInvestment = new AdvisorStockInvestment();
-                                AdvisorStockInvestment.AdvisorID = reader.GetInt32(0);
-                                AdvisorStockInvestment.ClientID = reader.GetInt32(1);
-                                AdvisorStockInvestment.StratergyID = reader.GetInt32(2);
-                                AdvisorStockInvestment.StockID = reader.GetInt32(3);
+                                AdvisorStockInvestment.AdvisorID = reader.GetGuid(0);
+                                AdvisorStockInvestment.ClientID = reader.GetGuid(1);
+                                AdvisorStockInvestment.StratergyID = reader.GetGuid(2);
+                                AdvisorStockInvestment.StockID = reader.GetGuid(3);
                                 AdvisorStockInvestment.StockName = reader.GetString(4);
                                 AdvisorStockInvestment.StockPrice = reader.GetDecimal(5);
                                 AdvisorStockInvestment.StockQuantity = reader.GetInt32(6);
@@ -1186,7 +1186,7 @@ namespace MakeProfits.Backend.Repository
             }
 
         }
-        public List<AvisorBondInvestment> RetrieveAdvisorBondInvestments(int AdvisorID)
+        public List<AvisorBondInvestment> RetrieveAdvisorBondInvestments(Guid AdvisorID)
         {
             _logger.LogInformation("Request to retrieve all the BondInvestments of Advisor {AdviosrID}", AdvisorID);
             try
@@ -1211,10 +1211,10 @@ namespace MakeProfits.Backend.Repository
                             while (reader.Read())
                             {
                                 AvisorBondInvestment = new AvisorBondInvestment();
-                                AvisorBondInvestment.AdvisorID = reader.GetInt32(0);
-                                AvisorBondInvestment.ClientID = reader.GetInt32(1);
-                                AvisorBondInvestment.StratergyID = reader.GetInt32(2);
-                                AvisorBondInvestment.BondID = reader.GetInt32(3);
+                                AvisorBondInvestment.AdvisorID = reader.GetGuid(0);
+                                AvisorBondInvestment.ClientID = reader.GetGuid(1);
+                                AvisorBondInvestment.StratergyID = reader.GetGuid(2);
+                                AvisorBondInvestment.BondID = reader.GetGuid(3);
                                 AvisorBondInvestment.BondName = reader.GetString(4);
                                 AvisorBondInvestment.BondPrice = reader.GetDecimal(5);
                                 AvisorBondInvestment.BondQuantity = reader.GetInt32(6);
@@ -1271,7 +1271,7 @@ namespace MakeProfits.Backend.Repository
             }
 
         }
-        public List<AdvisorMutualFundInvestment> RetrieveAdvisorMutualFundInvestments(int AdvisorID)
+        public List<AdvisorMutualFundInvestment> RetrieveAdvisorMutualFundInvestments(Guid AdvisorID)
         {
             _logger.LogInformation("Request to retrieve all the MutualFundInvestments of Advisor {AdviosrID}", AdvisorID);
             try
@@ -1296,10 +1296,10 @@ namespace MakeProfits.Backend.Repository
                             while (reader.Read())
                             {
                                 AdvisorMutualFundInvestment = new AdvisorMutualFundInvestment();
-                                AdvisorMutualFundInvestment.AdvisorID = reader.GetInt32(0);
-                                AdvisorMutualFundInvestment.ClientID = reader.GetInt32(1);
-                                AdvisorMutualFundInvestment.StratergyID = reader.GetInt32(2);
-                                AdvisorMutualFundInvestment.MutualFundID = reader.GetInt32(3);
+                                AdvisorMutualFundInvestment.AdvisorID = reader.GetGuid(0);
+                                AdvisorMutualFundInvestment.ClientID = reader.GetGuid(1);
+                                AdvisorMutualFundInvestment.StratergyID = reader.GetGuid(2);
+                                AdvisorMutualFundInvestment.MutualFundID = reader.GetGuid(3);
                                 AdvisorMutualFundInvestment.MutualFundName = reader.GetString(4);
                                 AdvisorMutualFundInvestment.MutualFundPrice = reader.GetDecimal(5);
                                 AdvisorMutualFundInvestment.MutualFundQuantity = reader.GetInt32(6);

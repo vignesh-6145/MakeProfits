@@ -2,6 +2,6 @@
 {
     public class Advisor : AbstractUser
     {
-        public int Rating { get; set; }
+        public decimal Rating { get; set; }
     }
 }

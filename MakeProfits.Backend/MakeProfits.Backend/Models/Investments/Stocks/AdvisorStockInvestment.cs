@@ -2,6 +2,6 @@
 {
     public class AdvisorStockInvestment : StockInvestment
     {
-        public int AdvisorID { get; set; }
+        public Guid AdvisorID { get; set; }
     }
 }
