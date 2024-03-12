@@ -1,4 +1,6 @@
-﻿using MakeProfits.Backend.Models.Stock;
+﻿using MakeProfits.Backend.Models;
+using MakeProfits.Backend.Models.Investments;
+using MakeProfits.Backend.Models.Investments.Stocks;
 
 namespace MakeProfits.Backend.Repository
 {
@@ -12,7 +14,12 @@ namespace MakeProfits.Backend.Repository
         bool InsertSecurityIncomeStatementInfo(StockIncomeStatement securityIncomeStatement);
         StockDTO RetrieveSecurityProfile(string _);
         StockIncomeStatement RetieveSecurityIncomeStatement(string tickSymbol, int year);
-        StockBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year);    
+        StockBalanceSheet RetrieveSecurityBalanceSheet(string tickSymbol, int year);
+
+        bool OptinStratergy(InvestmentStratergy investmentStratergy);
+        bool OptoutStratergy(InvestmentStratergy investmentStratergy);
+        Portfolio GetUserProtfolio(int ClientID, string _="All");
+        AdvisorPortfolio GetAdvisorPortfolio(int AdvisorID, string _ = "All");
 
     }
 }

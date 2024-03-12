@@ -1,5 +1,5 @@
 ﻿using MakeProfits.Backend.Models;
-using MakeProfits.Backend.Models.Stock;
+using MakeProfits.Backend.Models.Investments.Stocks;
 using MakeProfits.Backend.Repository;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Newtonsoft.Json.Linq;

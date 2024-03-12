@@ -1,4 +1,4 @@
-﻿namespace MakeProfits.Backend.Models.Stock
+﻿namespace MakeProfits.Backend.Models.Investments.Stocks
 {
     public class AbstractStock
     {
