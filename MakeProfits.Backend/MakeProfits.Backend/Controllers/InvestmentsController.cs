@@ -66,6 +66,12 @@ namespace MakeProfits.Backend.Controllers
             }
             return Ok(userPortfolio);
         }
+        [HttpGet("Advisor/{AdvisorID}/portfolio")]
+        public ActionResult GetAdvisorPortfolio(int AdvisorID,string InvestmentType = "All")
+        {
+            _logger.LogInformation("Initiating the process of Retrieving Advisor portfolio");
+            return Ok(_dataAccess.GetAdvisorPortfolio(AdvisorID, InvestmentType));
+        }
     }
 
 

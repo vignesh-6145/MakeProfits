@@ -1,5 +1,6 @@
 ﻿
 using MakeProfits.Backend.Models;
+using MakeProfits.Backend.Models.Investments;
 using MakeProfits.Backend.Models.Investments.Bonds;
 using MakeProfits.Backend.Models.Investments.MutualFunds;
 using MakeProfits.Backend.Models.Investments.Stocks;
@@ -1040,6 +1041,291 @@ namespace MakeProfits.Backend.Repository
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "retrieve_mutualfund_investments");
+                        connection.Close();
+                        return null;
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    connection.Close();
+                    return null;
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
+                return null;
+            }
+
+        }
+
+        public AdvisorPortfolio GetAdvisorPortfolio(int AdvisorID, string InvestmentType = "All")
+        {
+            _logger.LogInformation("Initiating the process of Retrieving Advisor portfolio");
+            AdvisorPortfolio advisorPortfolio = new AdvisorPortfolio();
+            if (InvestmentType == "Stock" || InvestmentType == "All")
+            {
+                advisorPortfolio.StockInvestments = RetrieveAdvisorStockInvestments(AdvisorID);
+                advisorPortfolio.StockInvestmentsValue = advisorPortfolio.StockInvestments.Sum(stockinvestment => stockinvestment.InvestmentValue);
+                advisorPortfolio.totalInvestmentsValue += advisorPortfolio.StockInvestmentsValue;
+            }
+            if (InvestmentType == "Bond" || InvestmentType == "All")
+            {
+                advisorPortfolio.BondInvestments = RetrieveAdvisorBondInvestments(AdvisorID);
+                advisorPortfolio.BondInvestmentsValue = advisorPortfolio.BondInvestments.Sum(bondInvestment => bondInvestment.InvestmentValue);
+                advisorPortfolio.totalInvestmentsValue += advisorPortfolio.BondInvestmentsValue;
+            }
+            if(InvestmentType =="MF" || InvestmentType == "All")
+            {
+                advisorPortfolio.MutualFundInvestments = RetrieveAdvisorMutualFundInvestments(AdvisorID);
+                advisorPortfolio.MutualFundInvestmentsValue = advisorPortfolio.MutualFundInvestments.Sum(mfInvestment => mfInvestment.InvestmentValue);
+                advisorPortfolio.totalInvestmentsValue += advisorPortfolio.MutualFundInvestmentsValue;
+            }
+
+            advisorPortfolio.StockInvestmentsPercentage = advisorPortfolio.StockInvestmentsValue / advisorPortfolio.totalInvestmentsValue;
+            advisorPortfolio.BondInvestmentsPercentage = advisorPortfolio.BondInvestmentsValue / advisorPortfolio.totalInvestmentsValue;
+            advisorPortfolio.MountInvestmentsInvestmentsPercentage = advisorPortfolio.MutualFundInvestmentsValue / advisorPortfolio.totalInvestmentsValue;
+
+            return advisorPortfolio;
+        }
+        public List<AdvisorStockInvestment> RetrieveAdvisorStockInvestments(int AdvisorID)
+        {
+            _logger.LogInformation("Request to retrieve all the StockInvestments of Advisor {AdviosrID}", AdvisorID);
+            try
+            {
+                string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(conn);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("retrieve_advisor_stock_investments", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@AdvisorID", AdvisorID);
+                    _logger.LogInformation("Created and Parametrized the Comamnd");
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        _logger.LogInformation("Command Executing retrieving results");
+                        List<AdvisorStockInvestment> AdvisorStockInvestments = new List<AdvisorStockInvestment>();
+                        AdvisorStockInvestment AdvisorStockInvestment;
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                AdvisorStockInvestment = new AdvisorStockInvestment();
+                                AdvisorStockInvestment.AdvisorID = reader.GetInt32(0);
+                                AdvisorStockInvestment.ClientID = reader.GetInt32(1);
+                                AdvisorStockInvestment.StratergyID = reader.GetInt32(2);
+                                AdvisorStockInvestment.StockID = reader.GetInt32(3);
+                                AdvisorStockInvestment.StockName = reader.GetString(4);
+                                AdvisorStockInvestment.StockPrice = reader.GetDecimal(5);
+                                AdvisorStockInvestment.StockQuantity = reader.GetInt32(6);
+                                AdvisorStockInvestment.InvestmentValue = AdvisorStockInvestment.StockQuantity * AdvisorStockInvestment.StockPrice;
+
+                                _logger.LogInformation("Read Stock Information of {StockName} for Client {ClientID} under Advisor {AdvisorID} ", AdvisorStockInvestment.StockName, AdvisorStockInvestment.ClientID, AdvisorStockInvestment.AdvisorID);
+                                AdvisorStockInvestments.Add(AdvisorStockInvestment);
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogInformation("User has not Stocks under his portfolio");
+                        }
+                        reader.Close();
+                        connection.Close();
+                        return AdvisorStockInvestments;
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "retrieve_advisor_stock_investments");
+                        connection.Close();
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "retrieve_advisor_stock_investments");
+                        connection.Close();
+                        return null;
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    connection.Close();
+                    return null;
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
+                return null;
+            }
+
+        }
+        public List<AvisorBondInvestment> RetrieveAdvisorBondInvestments(int AdvisorID)
+        {
+            _logger.LogInformation("Request to retrieve all the BondInvestments of Advisor {AdviosrID}", AdvisorID);
+            try
+            {
+                string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(conn);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("retrieve_advisor_bond_investments", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@AdvisorID", AdvisorID);
+                    _logger.LogInformation("Created and Parametrized the Comamnd");
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        _logger.LogInformation("Command Executing retrieving results");
+                        List<AvisorBondInvestment> AvisorBondInvestments = new List<AvisorBondInvestment>();
+                        AvisorBondInvestment AvisorBondInvestment;
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                AvisorBondInvestment = new AvisorBondInvestment();
+                                AvisorBondInvestment.AdvisorID = reader.GetInt32(0);
+                                AvisorBondInvestment.ClientID = reader.GetInt32(1);
+                                AvisorBondInvestment.StratergyID = reader.GetInt32(2);
+                                AvisorBondInvestment.BondID = reader.GetInt32(3);
+                                AvisorBondInvestment.BondName = reader.GetString(4);
+                                AvisorBondInvestment.BondPrice = reader.GetDecimal(5);
+                                AvisorBondInvestment.BondQuantity = reader.GetInt32(6);
+                                AvisorBondInvestment.InvestmentValue = AvisorBondInvestment.BondQuantity * AvisorBondInvestment.BondPrice;
+
+                                _logger.LogInformation("Read Bond Information of {BondName} for Client {ClientID} under Advisor {AdvisorID} ", AvisorBondInvestment.BondName, AvisorBondInvestment.ClientID, AvisorBondInvestment.AdvisorID);
+                                AvisorBondInvestments.Add(AvisorBondInvestment);
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogInformation("User has not Stocks under his portfolio");
+                        }
+                        reader.Close();
+                        connection.Close();
+                        return AvisorBondInvestments;
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "retrieve_advisor_bond_investments");
+                        connection.Close();
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "retrieve_advisor_bond_investments");
+                        connection.Close();
+                        return null;
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    connection.Close();
+                    return null;
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
+                return null;
+            }
+
+        }
+        public List<AdvisorMutualFundInvestment> RetrieveAdvisorMutualFundInvestments(int AdvisorID)
+        {
+            _logger.LogInformation("Request to retrieve all the MutualFundInvestments of Advisor {AdviosrID}", AdvisorID);
+            try
+            {
+                string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(conn);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("retrieve_advisor_mf_investments", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@AdvisorID", AdvisorID);
+                    _logger.LogInformation("Created and Parametrized the Comamnd");
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        _logger.LogInformation("Command Executing retrieving results");
+                        List<AdvisorMutualFundInvestment> AdvisorMutualFundInvestments = new List<AdvisorMutualFundInvestment>();
+                        AdvisorMutualFundInvestment AdvisorMutualFundInvestment;
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                AdvisorMutualFundInvestment = new AdvisorMutualFundInvestment();
+                                AdvisorMutualFundInvestment.AdvisorID = reader.GetInt32(0);
+                                AdvisorMutualFundInvestment.ClientID = reader.GetInt32(1);
+                                AdvisorMutualFundInvestment.StratergyID = reader.GetInt32(2);
+                                AdvisorMutualFundInvestment.MutualFundID = reader.GetInt32(3);
+                                AdvisorMutualFundInvestment.MutualFundName = reader.GetString(4);
+                                AdvisorMutualFundInvestment.MutualFundPrice = reader.GetDecimal(5);
+                                AdvisorMutualFundInvestment.MutualFundQuantity = reader.GetInt32(6);
+                                AdvisorMutualFundInvestment.InvestmentValue = AdvisorMutualFundInvestment.MutualFundQuantity * AdvisorMutualFundInvestment.MutualFundPrice;
+
+                                _logger.LogInformation("Read Bond Information of {MutualFundName} for Client {ClientID} under Advisor {AdvisorID} ", AdvisorMutualFundInvestment.MutualFundName, AdvisorMutualFundInvestment.ClientID, AdvisorMutualFundInvestment.AdvisorID);
+                                AdvisorMutualFundInvestments.Add(AdvisorMutualFundInvestment);
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogInformation("User has not Stocks under his portfolio");
+                        }
+                        reader.Close();
+                        connection.Close();
+                        return AdvisorMutualFundInvestments;
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "retrieve_advisor_mf_investments");
+                        connection.Close();
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "retrieve_advisor_mf_investments");
                         connection.Close();
                         return null;
                     }
