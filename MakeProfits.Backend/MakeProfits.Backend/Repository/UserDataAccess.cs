@@ -14,31 +14,22 @@ namespace MakeProfits.Repository
           {
             this.connectionstring = connectionstring;
             }
-         public void RegisterUser(User user)
+        public void RegisterUser(AbstractUser user)
         {
-            using(SqlConnection connection = new SqlConnection(connectionstring))
-            { 
+            using (SqlConnection connection = new SqlConnection(connectionstring))
+            {
                 connection.Open();
-                using (SqlCommand command = new SqlCommand("InsertUser", connection))
+                using (SqlCommand command = new SqlCommand("RegisterUser", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-
+                    Guid userid = Guid.NewGuid();
                     // Parameters
-                    command.Parameters.AddWithValue("@UserID", user.UserID);
-                    command.Parameters.AddWithValue("@RoleID",user.RoleID);
-                    command.Parameters.AddWithValue("@AddressLine",user.AddressLine);
-                    command.Parameters.AddWithValue("@City",user.City);
-                    command.Parameters.AddWithValue("@State",user.State);
-                    command.Parameters.AddWithValue("@EmailAddress",user.EmailAddress);
-                    command.Parameters.AddWithValue("@AdvisorID",user.AdvisorID);
-                    command.Parameters.AddWithValue("@AgentID",user.AgentID);
-                    command.Parameters.AddWithValue("@FirstName",user.FirstName);
-                    command.Parameters.AddWithValue("@LastName",user.LastName);
-                    command.Parameters.AddWithValue("@Company","<>");
-
-                    command.Parameters.AddWithValue("@UserName",user.UserName);
-                    command.Parameters.AddWithValue("@Password",user.Password);
-                    command.Parameters.AddWithValue("@PhoneNumber",user.PhoneNumber);
+                    command.Parameters.AddWithValue("@role", "client");
+                    command.Parameters.AddWithValue("@email", user.EmailAddress);
+                    command.Parameters.AddWithValue("@phno", user.PhoneNumber);
+                    command.Parameters.AddWithValue("@password", user.PhoneNumber);
+                    command.Parameters.AddWithValue("@firstname", user.FirstName);
+                    command.Parameters.AddWithValue("@userid", userid);
 
 
                     command.ExecuteNonQuery();
@@ -115,33 +106,55 @@ namespace MakeProfits.Repository
                 conn.Close();
             }
         }
-        public bool ValidateUser(String Username,String Password)
+        public string ValidateUser(String Username, String Password)
         {
-            using(SqlConnection conn = new SqlConnection(connectionstring))
+            using (SqlConnection conn = new SqlConnection(connectionstring))
             {
                 conn.Open();
-                using(SqlCommand command = new SqlCommand("ValidateUser",conn))
+                using (SqlCommand command = new SqlCommand("ValidateUser", conn))
                 {
-                    command.CommandType= CommandType.StoredProcedure;
-                    SqlParameter pr1=new    SqlParameter("@Username",Username);
-                    SqlParameter pr2 = new SqlParameter("@Password", Password);
-                    command.Parameters.Add(pr1 );
-                    command.Parameters.Add(pr2 );
-                    using(SqlDataReader reader = command.ExecuteReader())
+                    command.CommandType = CommandType.StoredProcedure;
+                    SqlParameter pr1 = new SqlParameter("@email", Username);
+                    SqlParameter pr2 = new SqlParameter("@password", Password);
+                    command.Parameters.Add(pr1);
+                    command.Parameters.Add(pr2);
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        if(reader.Read())
+                        if (reader.Read())
                         {
-                            if(reader.GetInt32(0)==1)
-                            { return true; }
-                            else { return false; }
+                            return reader["role"].ToString();
                         }
-                        return false;
+                        return "not a user";
                     }
 
                 }
             }
         }
+        public string ValidateUserOfGgl(string username)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionstring))
+            {
+                conn.Open();
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = conn;
+                    command.CommandType = CommandType.Text;
 
+                    // Use parameterized query to prevent SQL injection
+                    command.CommandText = "SELECT role FROM users WHERE email = @email";
+                    command.Parameters.AddWithValue("@email", username);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader["role"].ToString();
+                        }
+                        return "not a user";
+                    }
+                }
+            }
+        }
         public bool RequestAdvisory(AdvisoryRequest advisoryRequest)
         {
             advisoryRequest.RequestBY = "C";

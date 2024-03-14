@@ -32,21 +32,30 @@ namespace MakeProfits.Backend.Controllers
             _userDataAccess.RegisterUser(user);
             return Ok(user);
         }
+        //[HttpPost("Login")]
+        //public ActionResult Login(string Username, string Password)
+        //{
+        //    if(_userDataAccess.ValidateUser(Username, Password))
+        //    {
+        //        _logger.LogInformation("User authenticated successfully");
+        //        return Ok(_userDataAccess.getUserByUserName(Username));
+        //    }
+        //    else
+        //    {
+        //        _logger.LogInformation("Unable to Authenticate user {UserName}",Username);
+        //        return BadRequest("Wrong Credentials");
+        //    }
+        //}
         [HttpPost("Login")]
-        public ActionResult Login(string Username, string Password)
+        public ActionResult<User> Login(string Username, string Password)
         {
-            if(_userDataAccess.ValidateUser(Username, Password))
-            {
-                _logger.LogInformation("User authenticated successfully");
-                return Ok(_userDataAccess.getUserByUserName(Username));
-            }
-            else
-            {
-                _logger.LogInformation("Unable to Authenticate user {UserName}",Username);
-                return BadRequest("Wrong Credentials");
-            }
+            return Ok(_userDataAccess.ValidateUser(Username, Password));
         }
-
+        [HttpPost("Loginwithgoogle")]
+        public ActionResult<User> Login(string Username)
+        {
+            return Ok(_userDataAccess.ValidateUserOfGgl(Username));
+        }
         [HttpPost("RequestAdvisor")]
         public ActionResult ChooseAdvisor([FromBody] AdvisoryRequest clientRequest)
         {
