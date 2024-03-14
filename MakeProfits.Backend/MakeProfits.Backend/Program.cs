@@ -46,6 +46,7 @@ namespace MakeProfits.Backend
             builder.Services.AddSingleton(new UserDataAccess(connectionString));
             builder.Services.AddSingleton<IInvestmentDataAccess,InvestmentDataAccess>();
             builder.Services.AddSingleton<IAdvisorDataAccess, AdvisorDataAccess>();
+            builder.Services.AddSingleton<IStrategyDataAccess, StrategyDataAccess>();
                   
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
