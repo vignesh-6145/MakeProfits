@@ -1071,7 +1071,68 @@ namespace MakeProfits.Backend.Repository
             }
 
         }
+        public void getInvestmentStatus(Guid StratergyID, ref decimal initialFund, ref decimal crrFund)
+        {
+            _logger.LogInformation("Initiating the process of retrieving Investment Status");
+            try
+            {
+                string conn = _configuration.GetConnectionString("DBConnection");
+                SqlConnection connection = new SqlConnection(conn);
+                connection.Open();
+                try
+                {
+                    SqlCommand command = new SqlCommand("retrieve_stratergy_fund_status", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@stratergyID", StratergyID);
+                    _logger.LogInformation("Created and Parametrized the Comamnd");
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+                        _logger.LogInformation("Command Executing retrieving results");
+                        if (reader.Read() && reader.HasRows)
+                        {
+                           initialFund = reader.GetDecimal(0);
+                            crrFund = reader.GetDecimal(1);
+                        }
+                        else
+                        {
+                            _logger.LogInformation("User has not Stocks under his portfolio");
+                        }
+                        reader.Close();
+                        connection.Close();
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execute SP_{storedProcedure}, Exception  raised due to DBContext", "retrieve_stratergy_fund_status");
+                        connection.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to Execure SP_{storedProcedure}, Exception raised in genetal context", "retrieve_stratergy_fund_status");
+                        connection.Close();
+                    }
 
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception  raised due to DBContext");
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to Establish a command, Exception raised in genetal context");
+                    connection.Close();
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception  raised due to DBContext");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Establish a connection, Exception raised in genetal context");
+            }
+        }
         public AdvisorPortfolio GetAdvisorPortfolio(Guid AdvisorID, string InvestmentType = "All")
         {
             _logger.LogInformation("Initiating the process of Retrieving Advisor portfolio");
@@ -1080,24 +1141,27 @@ namespace MakeProfits.Backend.Repository
             {
                 advisorPortfolio.StockInvestments = RetrieveAdvisorStockInvestments(AdvisorID);
                 advisorPortfolio.StockInvestmentsValue = advisorPortfolio.StockInvestments.Sum(stockinvestment => stockinvestment.InvestmentValue);
-                advisorPortfolio.totalInvestmentsValue += advisorPortfolio.StockInvestmentsValue;
+                advisorPortfolio.crrInvestmentsValue += advisorPortfolio.StockInvestmentsValue;
+                advisorPortfolio.totalInvestmentValue += advisorPortfolio.StockInvestments.Sum(stockinvestment => stockinvestment.InitialFund);
+                
             }
             if (InvestmentType == "Bond" || InvestmentType == "All")
             {
                 advisorPortfolio.BondInvestments = RetrieveAdvisorBondInvestments(AdvisorID);
                 advisorPortfolio.BondInvestmentsValue = advisorPortfolio.BondInvestments.Sum(bondInvestment => bondInvestment.InvestmentValue);
-                advisorPortfolio.totalInvestmentsValue += advisorPortfolio.BondInvestmentsValue;
+                advisorPortfolio.crrInvestmentsValue += advisorPortfolio.BondInvestmentsValue;
             }
             if(InvestmentType =="MF" || InvestmentType == "All")
             {
                 advisorPortfolio.MutualFundInvestments = RetrieveAdvisorMutualFundInvestments(AdvisorID);
                 advisorPortfolio.MutualFundInvestmentsValue = advisorPortfolio.MutualFundInvestments.Sum(mfInvestment => mfInvestment.InvestmentValue);
-                advisorPortfolio.totalInvestmentsValue += advisorPortfolio.MutualFundInvestmentsValue;
+                advisorPortfolio.crrInvestmentsValue += advisorPortfolio.MutualFundInvestmentsValue;
             }
 
-            advisorPortfolio.StockInvestmentsPercentage = advisorPortfolio.StockInvestmentsValue / advisorPortfolio.totalInvestmentsValue;
-            advisorPortfolio.BondInvestmentsPercentage = advisorPortfolio.BondInvestmentsValue / advisorPortfolio.totalInvestmentsValue;
-            advisorPortfolio.MountInvestmentsInvestmentsPercentage = advisorPortfolio.MutualFundInvestmentsValue / advisorPortfolio.totalInvestmentsValue;
+
+            advisorPortfolio.StockInvestmentsPercentage = advisorPortfolio.StockInvestmentsValue / advisorPortfolio.totalInvestmentValue;
+            advisorPortfolio.BondInvestmentsPercentage = advisorPortfolio.BondInvestmentsValue / advisorPortfolio.totalInvestmentValue;
+            advisorPortfolio.MountInvestmentsInvestmentsPercentage = advisorPortfolio.MutualFundInvestmentsValue / advisorPortfolio.totalInvestmentValue;
 
             return advisorPortfolio;
         }
@@ -1134,6 +1198,7 @@ namespace MakeProfits.Backend.Repository
                                 AdvisorStockInvestment.StockPrice = reader.GetDecimal(5);
                                 AdvisorStockInvestment.StockQuantity = reader.GetInt32(6);
                                 AdvisorStockInvestment.InvestmentValue = AdvisorStockInvestment.StockQuantity * AdvisorStockInvestment.StockPrice;
+                                AdvisorStockInvestment.InitialFund = reader.GetDecimal(7);
 
                                 _logger.LogInformation("Read Stock Information of {StockName} for Client {ClientID} under Advisor {AdvisorID} ", AdvisorStockInvestment.StockName, AdvisorStockInvestment.ClientID, AdvisorStockInvestment.AdvisorID);
                                 AdvisorStockInvestments.Add(AdvisorStockInvestment);
@@ -1219,6 +1284,7 @@ namespace MakeProfits.Backend.Repository
                                 AvisorBondInvestment.BondPrice = reader.GetDecimal(5);
                                 AvisorBondInvestment.BondQuantity = reader.GetInt32(6);
                                 AvisorBondInvestment.InvestmentValue = AvisorBondInvestment.BondQuantity * AvisorBondInvestment.BondPrice;
+                                AvisorBondInvestment.InitialFund = reader.GetDecimal(7);
 
                                 _logger.LogInformation("Read Bond Information of {BondName} for Client {ClientID} under Advisor {AdvisorID} ", AvisorBondInvestment.BondName, AvisorBondInvestment.ClientID, AvisorBondInvestment.AdvisorID);
                                 AvisorBondInvestments.Add(AvisorBondInvestment);
@@ -1304,6 +1370,7 @@ namespace MakeProfits.Backend.Repository
                                 AdvisorMutualFundInvestment.MutualFundPrice = reader.GetDecimal(5);
                                 AdvisorMutualFundInvestment.MutualFundQuantity = reader.GetInt32(6);
                                 AdvisorMutualFundInvestment.InvestmentValue = AdvisorMutualFundInvestment.MutualFundQuantity * AdvisorMutualFundInvestment.MutualFundPrice;
+                                AdvisorMutualFundInvestment.InitialFund = reader.GetDecimal(7);
 
                                 _logger.LogInformation("Read Bond Information of {MutualFundName} for Client {ClientID} under Advisor {AdvisorID} ", AdvisorMutualFundInvestment.MutualFundName, AdvisorMutualFundInvestment.ClientID, AdvisorMutualFundInvestment.AdvisorID);
                                 AdvisorMutualFundInvestments.Add(AdvisorMutualFundInvestment);

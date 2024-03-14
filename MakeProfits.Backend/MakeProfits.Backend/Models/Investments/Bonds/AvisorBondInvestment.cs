@@ -3,5 +3,7 @@
     public class AvisorBondInvestment : BondInvestment
     {
         public Guid AdvisorID { get; set; }
+
+        public decimal InitialFund { get; set; }
     }
 }

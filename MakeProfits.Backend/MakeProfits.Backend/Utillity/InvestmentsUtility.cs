@@ -267,11 +267,19 @@ namespace MakeProfits.Backend.Utillity
 
         public decimal CalculateFinancialStructure(decimal CrrYearTotalAssets, decimal PrevYearTotalAssets, decimal CrrYearTotalStockholdersEquity, decimal PrevYearTotalStockholdersEquity)
         {
+            if((CrrYearTotalStockholdersEquity + PrevYearTotalStockholdersEquity) == 0)
+            {
+                return 0;
+            }
             return ((CrrYearTotalAssets + PrevYearTotalAssets) / 2) /
                 ((CrrYearTotalStockholdersEquity+PrevYearTotalStockholdersEquity)/2);
         }
         public decimal CalculateProfitability(decimal NetIncome, decimal Revenue)
         {
+            if (Revenue == 0)
+            {
+                return 0;
+            }
             return NetIncome / Revenue;
         }
         public decimal CalculateReturnOnEquity(decimal Profitability, decimal TechnicalEfficiency, decimal FinancialStructure)
