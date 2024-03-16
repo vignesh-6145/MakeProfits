@@ -1,0 +1,82 @@
+/* WhatWeDo.css */
+
+.what-we-do-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex; /* Add flex display to make it a flex container */
+  flex-direction: column; /* Align items vertically */
+}
+
+.what-we-do-content-wrapper {
+  display: flex;
+  flex: 1; /* Make the content wrapper flex to allow for dynamic sizing */
+  align-items: center; /* Center align items vertically */
+}
+
+.what-we-do-image {
+  position: relative; /* Set position to relative for absolute positioning of explore button */
+  flex: 1; /* Image takes up half of the container */
+  max-width: 60%; /* Set maximum width to 50% of the container */
+  margin-right: 20px; /* Adjust margin between image and text */
+  align-self: flex-start; /* Align the image to the start (left) */
+  margin-bottom: 20px; /* Add margin to create space for the button */
+  margin-top: 50px;
+}
+
+.what-we-do-image img {
+  width: 100%; /* Ensure the image fills its container */
+  height: auto; /* Maintain aspect ratio */
+  max-height: 250px; /* Adjust maximum height as needed */
+}
+.what-we-do-header{
+  margin-left:400px;
+}
+.explore-button {
+  position: absolute;
+  bottom: 0;
+  left: 0; /* Change 'right' to 'left' */
+  background-color: transparent;
+  color: #00b4d8;
+  padding: 8px 16px;
+  border-radius: 20px; /* Make border-radius half of the height to create an oval shape */
+  cursor: pointer;
+  margin-left: 250px;
+  border: 2px solid #00b4d8 ;
+}
+
+
+.explore-button:hover {
+  background-color: #0096b4;
+}
+
+.what-we-do-content {
+  flex: 1; /* Text takes up half of the container */
+  margin-top: 20px;
+}
+
+/* Additional styles for the rest of the content */
+.what-we-do-container h2 {
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 10px;
+  text-align: left; /* Align heading to the left */
+}
+
+.what-we-do-container p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+  margin-top: 10px; /* Add margin to top of paragraphs */
+}
+
+/* Divider style */
+.divider {
+  border-top: 2px solid #ccc;
+  width: 100%;
+  margin-top: 10px; /* Adjust margin to create space between heading and divider */
+  margin-bottom: 10px; /* Adjust margin to create space between divider and paragraphs */
+}

@@ -1,0 +1,137 @@
+/* AboutUs.css */
+/* AboutUs.css */
+
+.about-us-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex; /* Add flex display to make it a flex container */
+}
+.about-us-header {
+  margin-top: 40px;;
+}
+.about-us-content-wrapper {
+  display: flex;
+  flex: 1; /* Make the content wrapper flex to allow for dynamic sizing */
+  align-items: center; /* Center align items vertically */
+}
+
+.about-us-image {
+  flex: 1; /* Image takes up half of the container */
+  max-width: 60%; /* Set maximum width to 50% of the container */
+  margin-right: 20px; /* Adjust margin between image and text */
+  align-self: flex-start; /* Align the image to the start (left) */
+  margin-top: 120px;
+}
+
+.about-us-image img {
+  width: 100%; /* Ensure the image fills its container */
+  height: auto; /* Maintain aspect ratio */
+  max-height: 250px; /* Adjust maximum height as needed */
+}
+
+.about-us-content {
+  flex: 1; /* Text takes up half of the container */
+  margin-top: 120px;
+}
+
+/* Additional styles for the rest of the content */
+.about-us-container h2 {
+  margin-top: 30px;
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: left; /* Align heading to the left */
+}
+
+.about-us-container p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* Style for the button */
+.expand-btn {
+  padding: 4px 8px; /* Reduce padding */
+  border: 2px solid #00b4d8;
+  background-color: transparent;
+  color: #00b4d8;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-left: 160px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  display: flex; /* Use flexbox to center button horizontally */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  width: fit-content; /* Adjust width based on content */
+  height: fit-content; 
+}
+
+.expand-btn:hover {
+  background-color: #00b4d8;
+  color: white;
+  border-color: #00b4d8;
+}
+
+.arrow-icon {
+  animation: bounce 1s infinite;
+  margin-top: 25px;
+  margin-left: 200px;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.down-arrow,
+.up-arrow {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.up-arrow {
+  margin-bottom: 10px;
+}
+
+.down-arrow {
+  margin-top: 10px;
+}
+
+
+/*.about-us-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #ebeffe;;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .about-us-container h2 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .about-us-container p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+  }
+  */
