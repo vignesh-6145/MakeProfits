@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+.hero{
+    background-image: url('./assets/finalbackground.png')  ;
+    background-repeat: round; /* or repeat-x, repeat-y, no-repeat */
+    background-position: left; /* or top left, top center, top right, center left, center right, bottom left, bottom center, bottom right */
+    /* Additional background properties (optional) */
+    background-size: contain; /* or contain, auto, or specific size values */
+    /* background-attachment: scroll; or scroll */
+    min-height: 100vh;
+    display: flex;
+    font-family: poppins;
+    
+}
+.example::-webkit-scrollbar {
+    display: none;
+  }
+.herotext{
+
+    margin-top: 25vh;
+    color:black;
+    width: 40%;
+    font-size: 1.25rem;
+    padding: 50px;
+}
+.herotext button{
+    
+    width: 50%;
+    background-color: transparent;
+    padding: 10px 20px; 
+    font-size: 20px;
+    color: black;
+    text-align: center;
+    border-radius: 55px;
+    border: 2px solid #55ad7b; /* Add border */
+    transition: border-color 0.3s ease; /* Add transition effect */
+    text-align: center;
+
+}
+.herotext button:hover {
+    background-color: #55ad7b; /* Change background color on hover */
+    color: white; /* Change text color on hover */
+    border-color: transparent; /* Change border color on hover */
+}

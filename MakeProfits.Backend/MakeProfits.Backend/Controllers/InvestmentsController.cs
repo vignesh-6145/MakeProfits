@@ -32,7 +32,7 @@ namespace MakeProfits.Backend.Controllers
 
         }
         [HttpPost("optinstratergy")]
-        public ActionResult OptInStratergy([FromBody]InvestmentStratergy investmentStratergy)
+        public ActionResult OptInStratergy([FromBody] InvestmentStratergy investmentStratergy)
         {
             if (_dataAccess.OptinStratergy(investmentStratergy))
             {
