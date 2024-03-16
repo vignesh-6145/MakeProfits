@@ -18,7 +18,8 @@ namespace MakeProfits.Backend.Models.Investments
         public decimal MutualFundInvestmentsValue { get; set; }
         public decimal MountInvestmentsInvestmentsPercentage { get; set; }
 
-        public decimal totalInvestmentsValue { get; set; }
+        public decimal crrInvestmentsValue { get; set; }
+        public decimal totalInvestmentValue { get; set; }
         public int ClientCount { get; set; }
     }
 }
