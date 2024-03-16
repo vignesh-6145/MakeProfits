@@ -1,4 +1,5 @@
-﻿using MakeProfits.Backend.Models.AdvisorRequests;
+﻿using MakeProfits.Backend.Models;
+using MakeProfits.Backend.Models.AdvisorRequests;
 using MakeProfits.Models;
 using MakeProfits.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace MakeProfits.Backend.Controllers
         //Working
         // POST: api/User/Register
         [HttpPost("Register")]
-        public ActionResult<User> Register(User user)
+        public ActionResult<userregister> Register(userregister user)
         {
             if (!ModelState.IsValid)
             {

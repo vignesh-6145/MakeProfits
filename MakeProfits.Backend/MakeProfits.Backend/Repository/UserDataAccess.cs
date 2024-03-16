@@ -14,7 +14,7 @@ namespace MakeProfits.Repository
           {
             this.connectionstring = connectionstring;
             }
-        public void RegisterUser(AbstractUser user)
+        public void RegisterUser(userregister user)
         {
             using (SqlConnection connection = new SqlConnection(connectionstring))
             {
@@ -25,10 +25,10 @@ namespace MakeProfits.Repository
                     Guid userid = Guid.NewGuid();
                     // Parameters
                     command.Parameters.AddWithValue("@role", "client");
-                    command.Parameters.AddWithValue("@email", user.EmailAddress);
-                    command.Parameters.AddWithValue("@phno", user.PhoneNumber);
-                    command.Parameters.AddWithValue("@password", user.PhoneNumber);
-                    command.Parameters.AddWithValue("@firstname", user.FirstName);
+                    command.Parameters.AddWithValue("@email", user.email);
+                    command.Parameters.AddWithValue("@phno", user.phno);
+                    command.Parameters.AddWithValue("@password", user.password);
+                    command.Parameters.AddWithValue("@firstname", user.firstname);
                     command.Parameters.AddWithValue("@userid", userid);
 
 
