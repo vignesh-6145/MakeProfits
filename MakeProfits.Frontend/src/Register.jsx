@@ -26,7 +26,7 @@ const handleSubmit = async (event) => {
   event.preventDefault();
 
   try {
-    const response = await axios.post('https://localhost:7274/api/User/Register', formData, {
+    const response = await axios.post('http://localhost:5236/api/User/Register', formData, {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
