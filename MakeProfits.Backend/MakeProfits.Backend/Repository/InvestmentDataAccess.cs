@@ -639,18 +639,10 @@ namespace MakeProfits.Backend.Repository
                         _logger.LogInformation("Command Executing retrieving results");
                         if (reader.Read() && reader.HasRows)
                         {
-                            if (reader.GetInt32(0) == 1)
-                            {
                                 reader.Close();
                                 connection.Close();
                                 return true;
-                            }
-                            else
-                            {
-                                reader.Close();
-                                connection.Close();
-                                return false;
-                            }
+                           
 
                         }
                         else

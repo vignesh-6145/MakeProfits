@@ -22,7 +22,7 @@ const Login = () => {
       const password = encodeURIComponent(Password);
   
       // Make API call to check credentials
-      const url = `https://localhost:7274/api/User/Login?Username=${username}&Password=${password}`;
+      const url = `http://localhost:5236/api/User/Login?Username=${username}&Password=${password}`;
   
       const response = await axios.post(url, null, {
         headers: {
@@ -53,7 +53,7 @@ const Login = () => {
 
   const handleGoogleLogin = async (Username) => {
     try {
-      const url = `https://localhost:7274/api/User/Loginwithgoogle?Username=${encodeURIComponent(Username)}`;
+      const url = `http://localhost:5236/api/User/Loginwithgoogle?Username=${encodeURIComponent(Username)}`;
       
       const response = await axios.post(url, null, {
         headers: {

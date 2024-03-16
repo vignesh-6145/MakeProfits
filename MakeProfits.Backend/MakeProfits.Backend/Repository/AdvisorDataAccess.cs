@@ -48,6 +48,7 @@ namespace MakeProfits.Backend.Repository
                             advisor.EmailAddress = reader.GetString(5);
                             advisor.PhoneNumber = reader.GetString(6);
                             advisor.Rating = reader.GetDecimal(7);
+                            advisor.ID = reader.GetGuid(8);
 
                             _logger.LogInformation("Retrieved Advisor with name : {AdvisorName}",advisor.FirstName);
 
@@ -128,6 +129,7 @@ namespace MakeProfits.Backend.Repository
                             advisor.EmailAddress = reader.GetString(5);
                             advisor.PhoneNumber = reader.GetString(6);
                             advisor.Rating = reader.GetDecimal(7);
+                            advisor.ID = reader.GetGuid(8);
 
                             _logger.LogInformation("Retrieved Advisor with name : {AdvisorName}", advisor.FirstName);
                             reader.Close();
@@ -299,15 +301,17 @@ namespace MakeProfits.Backend.Repository
                             while (reader.Read() && reader.HasRows)
                             {
                                 user = new AbstractUser();
-                                user.FirstName = reader.GetString(0);
-                                user.LastName = reader.GetString(1);
+                                user.FirstName = reader.GetString(0)??"";
+                                user.LastName = reader.GetString(1)??"";
                                 user.UserName = user.FirstName + user.LastName;
-                                user.AddressLine = reader.GetString(2);
-                                user.City = reader.GetString(3);
-                                user.State = reader.GetString(4);
-                                user.EmailAddress = reader.GetString(5);
-                                user.PhoneNumber = reader.GetString(6);
-                                user.funds = reader.GetDecimal(7);
+                                user.AddressLine = reader.GetString(2) ?? "";
+                                user.City = reader.GetString(3) ?? "";
+                                user.State = reader.GetString(4) ?? "";
+                                user.EmailAddress = reader.GetString(5) ?? "";
+                                user.PhoneNumber = reader.GetString(6) ?? "";
+                                var val = reader.GetDecimal(7);
+                                user.funds = val==null ? 0 :  val;
+                                user.ID = reader.GetGuid(8);
 
                                 _logger.LogInformation("Retrieved User with name : {UserName}", user.FirstName);
                                 users.Add(user);

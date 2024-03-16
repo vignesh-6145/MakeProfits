@@ -178,7 +178,7 @@ namespace MakeProfits.Repository
                         
                         if(reader.Read() && reader.HasRows)
                         {
-                            Console.WriteLine($"RESULT {reader.GetString(0)}");
+                            Console.WriteLine($"RESULT {reader.GetInt32(0)}");
                             reader.Close();
                             conn.Close();
                             return true;

@@ -1,7 +1,9 @@
-import React from 'react'
-import 'semantic-ui-css/semantic.min.css'
-import './alladvisor.css'
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import 'semantic-ui-css/semantic.min.css';
+import './alladvisor.css';
+
+import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   CardMeta,
@@ -11,53 +13,87 @@ import {
   CardContent,
   Button,
   Card,
-  Image,Popup
-  ,Rating,
+  Image,
+  Popup,
+  Rating,
   PopupHeader,
   PopupContent,
+  Table,
   TableRow,
   TableHeaderCell,
   TableHeader,
   TableCell,
   TableBody,
   Header,
-  Table,
- 
-} from 'semantic-ui-react'
-const Allstrategy = () => 
-  (
-    <div className='strategy-cont' style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh'}    }>
+} from 'semantic-ui-react';
+
+const Allstrategy = () => {
+  const location = useLocation();
+  const [strategyData, setStrategyData] = useState([]);
+  const navigate = useNavigate();
+  const advisor = location.state.advisor;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
         
-    <Card style={{innerWidth:'50vw'}}>
-      <CardContent>
-        <Image
-          floated='right'
-          size='mini'
-          src='https://react.semantic-ui.com/images/avatar/large/steve.jpg'
-        />
-        <CardHeader>Strategy no 3</CardHeader>
-        <CardMeta>advisor name</CardMeta>
-        <CardDescription>
-        <ul>
-    <li><strong>Stocks:</strong> 40%</li>
-    <li><strong>Bonds:</strong> 30%</li>
-    <li><strong>Real Estate:</strong> 20%</li>
-    <li><strong>Cryptocurrency:</strong> 10%</li>
-  </ul>
-        </CardDescription>
-      </CardContent>
-      <CardContent extra>
-        <div className='ui two buttons'>
-          <Button basic color='green' href ='/Alladvisor'>
-            Approve
-          </Button>
-          <Button basic color='red' >
-            Decline
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-    
+        console.log("hey ->"+JSON.stringify(advisor));
+        const response = await axios.post(`http://localhost:5236/api/Strategy/Showstrategy?advisorId=${advisor.id}`);
+        const data = await response.data;
+        setStrategyData(data);
+      } catch (error) {
+        console.error('Error fetching strategy:', error);
+      }
+    };
+
+    fetchData();
+  }, [advisor]); // Dependency array ensures fetch happens only when advisorID changes
+
+  const renderStrategy = () => {
+    return strategyData.map((strategy) => (
+      <TableRow key={strategy.strategyID}>
+        <TableHeaderCell>Stocks</TableHeaderCell>
+        <TableCell>{strategy.stockPercentage}%</TableCell>
+        <TableHeaderCell>Mutual Funds</TableHeaderCell>
+        <TableCell>{strategy.mfPercentage}%</TableCell>
+        <TableHeaderCell>Bonds</TableHeaderCell>
+        <TableCell>{strategy.bondsPercentage}%</TableCell>
+        {/*need to make a call to advisory request*/}
+        <Button basic color='green' href='/Alladvisor'>
+              Select this
+            </Button>
+      </TableRow>
+    ));
+  };
+
+  return (
+    <div className='strategy-cont' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Card style={{ innerWidth: '50vw' }}>
+        <CardContent>
+          <Image floated='right' size='mini' src='https://react.semantic-ui.com/images/avatar/large/steve.jpg' />
+          <CardHeader>All stratergies of Mr. {advisor.firstName}</CardHeader>
+          <CardDescription>
+            {/* Replace with relevant information from the API response (optional) */}
+            {advisor.emailAddress}
+          </CardDescription>
+          <Table celled>
+            <TableHeader>
+              <TableHeaderCell>Asset Class</TableHeaderCell>
+              <TableHeaderCell>Percentage</TableHeaderCell>
+            </TableHeader>
+            <TableBody>{renderStrategy()}</TableBody>
+          </Table>
+        </CardContent>
+        <CardContent extra>
+          <div className='ui two buttons'>
+            
+            <Button basic color='red'>
+              Go Back
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
+};
+
 export default Allstrategy;
