@@ -218,6 +218,7 @@ namespace MakeProfits.Backend.Repository
                                 advisor.EmailAddress = reader.GetString(5);
                                 advisor.PhoneNumber = reader.GetString(6);
                                 advisor.Rating = reader.GetDecimal(7);
+                                advisor.ID = reader.GetGuid(8);
 
                                 _logger.LogInformation("Retrieved Advisor with name : {AdvisorName}", advisor.FirstName);
                                 advisors.Add(advisor);

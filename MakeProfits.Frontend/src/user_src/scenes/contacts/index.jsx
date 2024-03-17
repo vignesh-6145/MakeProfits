@@ -11,8 +11,8 @@ const Contacts = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [clients,setClients] = useState([]);
-  
-  const baseURL = 'http://localhost:5236/api/Advisor/6/Clients';
+  {/**If user should display advisor contact details */}
+  const baseURL = 'http://localhost:5236/api/Advisor/Client/5DB69961-F543-43FB-9D0F-403B707056A1';
   useEffect(() => {
     const fetchData = async () => {
       try {
