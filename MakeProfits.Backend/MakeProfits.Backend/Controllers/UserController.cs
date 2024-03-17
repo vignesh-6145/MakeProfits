@@ -48,12 +48,12 @@ namespace MakeProfits.Backend.Controllers
         //    }
         //}
         [HttpPost("Login")]
-        public ActionResult<User> Login(string Username, string Password)
+        public ActionResult<userinfo> Login(string Username, string Password)
         {
             return Ok(_userDataAccess.ValidateUser(Username, Password));
         }
         [HttpPost("Loginwithgoogle")]
-        public ActionResult<User> Login(string Username)
+        public ActionResult<userinfo> Loginwithgoogle(string Username)
         {
             return Ok(_userDataAccess.ValidateUserOfGgl(Username));
         }
