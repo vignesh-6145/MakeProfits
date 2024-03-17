@@ -106,7 +106,7 @@ namespace MakeProfits.Repository
                 conn.Close();
             }
         }
-        public string ValidateUser(String Username, String Password)
+        public userinfo ValidateUser(String Username, String Password)
         {
             using (SqlConnection conn = new SqlConnection(connectionstring))
             {
@@ -122,15 +122,28 @@ namespace MakeProfits.Repository
                     {
                         if (reader.Read())
                         {
-                            return reader["role"].ToString();
+                            userinfo user = new userinfo
+                            {
+                                role = reader.GetString(0),
+                                firstname = reader.GetString(1),
+                                userid = reader.GetGuid(2),
+                                email = reader.GetString(3)
+
+
+                            };
+                            return user;
                         }
-                        return "not a user";
+                        else
+                        {
+                            return null;
+
+                        }
                     }
 
                 }
             }
         }
-        public string ValidateUserOfGgl(string username)
+        public userinfo ValidateUserOfGgl(string username)
         {
             using (SqlConnection conn = new SqlConnection(connectionstring))
             {
@@ -141,16 +154,25 @@ namespace MakeProfits.Repository
                     command.CommandType = CommandType.Text;
 
                     // Use parameterized query to prevent SQL injection
-                    command.CommandText = "SELECT role FROM users WHERE email = @email";
+                    command.CommandText = "SELECT role,firstname,userid,email FROM users WHERE email = @email";
                     command.Parameters.AddWithValue("@email", username);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            return reader["role"].ToString();
+                            userinfo user = new userinfo
+                            {
+                                role = reader.GetString(0),
+                                firstname = reader.GetString(1),
+                                userid = reader.GetGuid(2),
+                                email = reader.GetString(3)
+
+
+                            };
+                            return user ;
                         }
-                        return "not a user";
+                        return null;
                     }
                 }
             }
