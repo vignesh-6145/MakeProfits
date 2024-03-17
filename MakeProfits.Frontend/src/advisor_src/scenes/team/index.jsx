@@ -15,7 +15,7 @@ const Team = () => {
   const [selectedClient, setSelectedClient] = useState(null);
   const [showInvestmentInfo, setShowInvestmentInfo] = useState(false);
   const [clients,setClients] = useState([]);
-  const baseURL = 'http://localhost:5236/api/Advisor/6/Clients';
+  const baseURL = 'http://localhost:5236/api/Advisor/C332CB49-20F2-410F-BDDD-61546AE24F6D/Clients';
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,8 +36,14 @@ const Team = () => {
   const columns = [
     // Define your columns as before
     {
-      field: "name",
-      headerName: "Name",
+      field: "firstName",
+      headerName: "First name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "lastName",
+      headerName: "Last Name",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -62,34 +68,34 @@ const Team = () => {
     //   cellClassName: "name-column--cell",
     // },
      {
-       field: "age",
-       headerName: "Age",
+       field: "addressLine",
+       headerName: "Address",
        type: "number",
        headerAlign: "left",
        align: "left",
      },
      {
-      field: "strategy type",
-      headerName: "Strategy Type",
+      field: "state",
+      headerName: "State",
       flex: 1,
       cellClassName: "name-column--cell",
     },
-    {
-      field: "createdDate",
-      headerName: "Created Date",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
+    // {
+    //   field: "createdDate",
+    //   headerName: "Created Date",
+    //   flex: 1,
+    //   cellClassName: "name-column--cell",
+    // },
     {
       field: "phoneNumber",
       headerName: "phoneNumber",
       flex: 1,
     },
-    // {
-    //   field: "emailAddress",
-    //   headerName: "emailAddress",
-    //   flex: 1,
-    // },
+    {
+      field: "emailAddress",
+      headerName: "emailAddress",
+      flex: 1,
+    },
     // {
     //   field: "registrationDate",
     //   headerName: "Registration Date",

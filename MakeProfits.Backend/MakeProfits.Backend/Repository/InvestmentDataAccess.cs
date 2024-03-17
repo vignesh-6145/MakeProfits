@@ -802,11 +802,13 @@ namespace MakeProfits.Backend.Repository
                 userPortfolio.MutualInvestmentValue = userPortfolio.MutualFunds.Sum(mf => mf.InvestmentValue);
                 userPortfolio.TotalInvestmentValue += userPortfolio.MutualInvestmentValue;
             }
-
-            //calculating the percentages
-            userPortfolio.StockInvestmentPercentage = userPortfolio.StocksInvestmentValue / userPortfolio.TotalInvestmentValue;
-            userPortfolio.BondInvestmentPercentage = userPortfolio.BondInvestmentValue / userPortfolio.TotalInvestmentValue;
-            userPortfolio.MutualFundInvestmentPercentage = userPortfolio.MutualInvestmentValue / userPortfolio.TotalInvestmentValue;
+            if (userPortfolio.TotalInvestmentValue != 0)
+            {
+                //calculating the percentages
+                userPortfolio.StockInvestmentPercentage = userPortfolio.StocksInvestmentValue / userPortfolio.TotalInvestmentValue;
+                userPortfolio.BondInvestmentPercentage = userPortfolio.BondInvestmentValue / userPortfolio.TotalInvestmentValue;
+                userPortfolio.MutualFundInvestmentPercentage = userPortfolio.MutualInvestmentValue / userPortfolio.TotalInvestmentValue;
+            }
 
             return userPortfolio;
         }
@@ -1150,10 +1152,13 @@ namespace MakeProfits.Backend.Repository
                 advisorPortfolio.crrInvestmentsValue += advisorPortfolio.MutualFundInvestmentsValue;
             }
 
+            if (advisorPortfolio.totalInvestmentValue!=0)
+            {
 
-            advisorPortfolio.StockInvestmentsPercentage = advisorPortfolio.StockInvestmentsValue / advisorPortfolio.totalInvestmentValue;
-            advisorPortfolio.BondInvestmentsPercentage = advisorPortfolio.BondInvestmentsValue / advisorPortfolio.totalInvestmentValue;
-            advisorPortfolio.MountInvestmentsInvestmentsPercentage = advisorPortfolio.MutualFundInvestmentsValue / advisorPortfolio.totalInvestmentValue;
+                advisorPortfolio.StockInvestmentsPercentage = advisorPortfolio.StockInvestmentsValue / advisorPortfolio.totalInvestmentValue;
+                advisorPortfolio.BondInvestmentsPercentage = advisorPortfolio.BondInvestmentsValue / advisorPortfolio.totalInvestmentValue;
+                advisorPortfolio.MountInvestmentsInvestmentsPercentage = advisorPortfolio.MutualFundInvestmentsValue / advisorPortfolio.totalInvestmentValue;
+            }
 
             return advisorPortfolio;
         }
