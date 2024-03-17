@@ -29,7 +29,6 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
       });
-  
       const data = response.data;
   
       console.log('Login response:', data);

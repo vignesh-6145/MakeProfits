@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import './alladvisor.css';
 
 import axios from 'axios';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { json, useLocation, useNavigate } from 'react-router-dom';
 
 import {
   CardMeta,
@@ -47,7 +47,28 @@ const Allstrategy = () => {
 
     fetchData();
   }, [advisor]); // Dependency array ensures fetch happens only when advisorID changes
+  const makeAdvisoryRequest = async (strategyID) => {
+    try {
+      const response = await axios.post(`http://localhost:5236/api/User/RequestAdvisor`, {
+        clientID: localStorage.getItem("userID"), // Replace with actual client ID
+        advisorID: advisor.id, // Use advisor ID from location state
+        stratergyID: strategyID,
+        requestBY: "C", // Replace with appropriate value
+        message: "Hey, please accept my req",   // Replace with appropriate message
+      });
 
+      console.log("Advisory request sent:", response.data);
+
+      // Handle success: Redirect to a confirmation page or display a success message
+      navigate('/allAdvisors'); // Example redirect
+    } catch (error) {
+      console.log(JSON.stringify(localStorage));
+      console.error('Error sending advisory request:', error);
+
+      // Handle error: Display an error message to the user
+      alert("Failed to send advisory request. Please try again later.");
+    }
+  };
   const renderStrategy = () => {
     return strategyData.map((strategy) => (
       <TableRow key={strategy.strategyID}>
@@ -58,7 +79,7 @@ const Allstrategy = () => {
         <TableHeaderCell>Bonds</TableHeaderCell>
         <TableCell>{strategy.bondsPercentage}%</TableCell>
         {/*need to make a call to advisory request*/}
-        <Button basic color='green' href='/Alladvisor'>
+        <Button basic color='green' onClick={()=>{makeAdvisoryRequest(strategy.strategyID)}}>
               Select this
             </Button>
       </TableRow>
